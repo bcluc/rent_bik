@@ -23,8 +23,8 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
       margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.13),
       decoration: BoxDecoration(
         border: Border.all(
-          color: Colors.black, // Màu sắc của border
-          width: 1, // Độ rộng của border
+          color: const Color.fromARGB(255, 49, 49, 49), // Màu sắc của border
+          width: 0.5, // Độ rộng của border
         ),
         borderRadius: BorderRadius.circular(10), // Bán kính của border
       ),

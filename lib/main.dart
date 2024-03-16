@@ -1,9 +1,7 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rent_bik/cubits/tat_ca_xe_cubit.dart';
 import 'package:rent_bik/screens/auth/auth.dart';
 import 'package:rent_bik/utils/db_process.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -36,9 +34,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-         colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 53, 63, 103)),
+         colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 53, 63, 103),
+         primary: const Color.fromARGB(255, 53, 63, 103),
+         secondary: const Color.fromARGB(255, 74, 53, 103),
+         tertiary: const Color.fromARGB(255, 244, 235, 217)
+         ),
         useMaterial3: true,
-        //textTheme: GoogleFonts.nunitoSansTextTheme(),
+        textTheme: GoogleFonts.nunitoTextTheme(),
       ),
       home: const LoginLayout(),
       localizationsDelegates: const [
