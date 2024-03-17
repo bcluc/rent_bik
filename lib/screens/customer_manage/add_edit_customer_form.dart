@@ -178,13 +178,7 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
                   initialDateInPicker: widget.editKhachHang != null
                       ? widget.editKhachHang!.ngaySinh
                       : DateTime.now().subYears(18),
-                  lastDate: DateTime.now().subYears(18),
-                ),
-                //
-                const SizedBox(height: 10),
-                LabelTextFormField(
-                  labelText: 'Địa chỉ',
-                  controller: _identityController,
+                  lastDate: DateTime.now(),
                 ),
                 //
                 const SizedBox(height: 10),
@@ -195,59 +189,29 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
                 //
                 const SizedBox(height: 10),
                 const Text(
-                  'Ngày lập thẻ',
+                  'Giấy phép lái xe',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
-                GestureDetector(
-                  onTap: () async {
-                    DateTime? chosenDate = await showDatePicker(
-                      context: context,
-                      initialDate: widget.editKhachHang != null
-                          ? widget.editKhachHang!.ngayLapThe
-                          : DateTime.now(),
-                      firstDate: DateTime(1950),
-                      lastDate: DateTime.now(),
-                    );
-                    if (chosenDate != null) {
-                      setCreationExpriationDate(chosenDate);
-                    }
-                  },
-                  child: TextFormField(
-                    controller: _creationDateController,
-                    enabled: false,
-                    mouseCursor: SystemMouseCursors.click,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: const Color.fromARGB(255, 245, 246, 250),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      contentPadding: const EdgeInsets.all(14),
-                      isCollapsed: true,
-                      suffixIcon: const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 14),
-                        child: Icon(
-                          Icons.calendar_today,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                    style: const TextStyle(color: Colors.black),
-                  ),
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  child: Text(_lincenseController.text, style: const TextStyle(
+                    fontWeight: FontWeight.w300,
+                    fontSize: 16
+                  ),),
+                ),
+
+                //
+                 const SizedBox(height: 10),
+                LabelTextFormField(
+                  labelText: 'Ghi chú',
+                  controller: _noteController,
                 ),
                 //
-                const SizedBox(height: 10),
-                LabelTextFormField(
-                  labelText: 'Ngày hết hạn',
-                  isEnable: false,
-                  controller: _expirationDateController,
-                ),
                 if (widget.editKhachHang == null) ...[
                   const SizedBox(height: 10),
                   Text(
-                    '*Thu tiền tạo thẻ ${ThamSoQuyDinh.phiTaoThe.toVnCurrencyFormat()}',
+                    '*Thu tiền tạo thẻ ',
                     style: const TextStyle(fontStyle: FontStyle.italic),
                   )
                 ],

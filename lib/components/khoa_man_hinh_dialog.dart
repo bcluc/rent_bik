@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:rent_bik/utils/common_variables.dart';
 
-import '../main.dart';
-
 class KhoaManHinhDialog extends StatefulWidget {
   const KhoaManHinhDialog({super.key});
 

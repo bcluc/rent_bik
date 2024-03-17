@@ -5,6 +5,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:rent_bik/components/password_text_field.dart';
 import 'package:rent_bik/screens/auth/login_view.dart';
 import 'package:rent_bik/screens/bike_rental_management.dart';
+import 'package:rent_bik/screens/customer_manage/add_edit_customer_form.dart';
 
 import '../../utils/common_variables.dart';
 
@@ -64,7 +65,8 @@ class _LoginLayoutState extends State<LoginLayout> {
           context,
           PageTransition(
             type: PageTransitionType.rightToLeft,
-            child: const BikeRentalManagement(),
+            //child: const BikeRentalManagement(),
+            child: const AddEditCustomerForm(),
             duration: const Duration(milliseconds: 300),
           ),
           (route) => false,
@@ -141,7 +143,8 @@ class _LoginLayoutState extends State<LoginLayout> {
                         padding: const EdgeInsets.symmetric(
                             vertical: 25, horizontal: 35),
                         foregroundColor: Colors.white,
-                        backgroundColor: Theme.of(context).colorScheme.secondary,
+                        backgroundColor:
+                            Theme.of(context).colorScheme.secondary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
                               10.0), // Adjust the value according to your preference

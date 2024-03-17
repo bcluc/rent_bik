@@ -171,7 +171,7 @@ class _BikeRentalManagementState extends State<BikeRentalManagement> with Ticker
             child: TabBarView(
               controller: _tabController,
               children: const [
-                CustomerManage()
+                //CustomerManage()
               ],
             ),
           ),

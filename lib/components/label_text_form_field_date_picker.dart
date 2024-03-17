@@ -66,7 +66,7 @@ class LabelTextFieldDatePicker extends StatelessWidget {
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Bạn chưa nhập $labelText'; // 68 44
+                return 'Bạn chưa nhập $labelText'; 
               }
               return null;
             },

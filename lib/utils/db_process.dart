@@ -12,7 +12,7 @@ class DbProcess {
   Future<void> connect() async {
     final currentFolder = Directory.current.path;
     _database = await openDatabase(
-      '$currentFolder/database/library.db',
+      '$currentFolder/database/rent_bik.db',
       version: 1,
       onCreate: (db, version) async {
         await db.execute(
