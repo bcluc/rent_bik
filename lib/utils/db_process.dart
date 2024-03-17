@@ -81,9 +81,52 @@ class DbProcess {
     return danhSachKhachHang;
   }
 
+  Future<List<KhachHang>> queryKhachHangFullnameWithString({
+    required String str,
+    required int numberRowIgnore,
+  }) async {
+    /* Lấy 10 dòng dữ liệu Độc Giả được thêm gần đây */
+    List<Map<String, dynamic>> data = await _database.rawQuery(
+      '''
+      select * from DocGia 
+      where HoTen like ? or SoDienThoai like ?
+      limit ?, 8
+      ''',
+      ['%$str%', '%$str%', numberRowIgnore],
+    );
+    List<KhachHang> danhSachKhachHang = [];
+
+    for (var element in data) {
+      danhSachKhachHang.add(
+        KhachHang(
+          element['MaKhachHang'],
+            element['HoTen'],
+            vnDateFormat.parse(element['NgaySinh'] as String),
+            element['SoDienThoai'],
+            element['HangGPLX'],
+            element['GhiChu'],
+        ),
+      );
+    }
+
+    return danhSachKhachHang;
+  }
+
   Future<int> queryCountKhachHang() async {
     return firstIntValue(
         await _database.rawQuery('select count(MaKhachHang) from KhachHang'))!;
+  }
+
+  Future<int> queryCountKhachHangFullnameWithString(String str) async {
+    return firstIntValue(
+      await _database.rawQuery(
+        '''
+          select count(MaKhachHang) from KhachHang 
+          where Hoten like ?
+          ''',
+        ['%${str.toLowerCase()}%'],
+      ),
+    )!;
   }
 
   Future<int> insertKhachHang(KhachHang newKhachHang) async {
@@ -108,4 +151,9 @@ class DbProcess {
       ],
     );
   }
+
+  Future<void> deleteKhachHang(String maKhachHang) async {
+    await _database.rawDelete('delete from KhachHang where MaKhachHang  = ?', [maKhachHang]);
+  }
+
 }

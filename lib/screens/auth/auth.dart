@@ -65,8 +65,8 @@ class _LoginLayoutState extends State<LoginLayout> {
           context,
           PageTransition(
             type: PageTransitionType.rightToLeft,
-            //child: const BikeRentalManagement(),
-            child: const AddEditCustomerForm(),
+            child: const BikeRentalManagement(),
+            //child: const AddEditCustomerForm(),
             duration: const Duration(milliseconds: 300),
           ),
           (route) => false,

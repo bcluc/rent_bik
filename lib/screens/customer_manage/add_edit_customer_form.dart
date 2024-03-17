@@ -46,7 +46,7 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
           _fullnameController.text.toLowerCase(),
           vnDateFormat.parse(_dobController.text),
           _phoneController.text,
-          _lincenseController.text.toUpperCase(),
+          _lincenseController.text.toLowerCase(),
           _noteController.text,
         );
 
@@ -61,7 +61,7 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
             vnDateFormat.parse(_dobController.text);
         widget.editKhachHang!.maKhachHang = _identityController.text;
         widget.editKhachHang!.soDienThoai = _phoneController.text;
-        widget.editKhachHang!.hangGPLX = _lincenseController.text.toUpperCase();
+        widget.editKhachHang!.hangGPLX = _lincenseController.text.toLowerCase();
         widget.editKhachHang!.ghiChu = _noteController.text;
 
         await dbProcess.updateKhachHang(widget.editKhachHang!);
@@ -95,22 +95,22 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
     super.initState();
     if (widget.editKhachHang != null) {
       /*
-      Nếu là chỉnh sửa độc giả
-      thì phải fill thông tin vào của độc giả cần chỉnh sửa vào form
+      Nếu là chỉnh sửa khách hàng
+      thì phải fill thông tin vào của khách hàng cần chỉnh sửa vào form
       */
       _identityController.text = widget.editKhachHang!.maKhachHang;
       _fullnameController.text =
           widget.editKhachHang!.hoTen.capitalizeFirstLetterOfEachWord();
       _dobController.text = widget.editKhachHang!.ngaySinh.toVnFormat();
       _phoneController.text = widget.editKhachHang!.soDienThoai;
-      _lincenseController.text = widget.editKhachHang!.hangGPLX!;
+      _lincenseController.text = widget.editKhachHang!.hangGPLX!.toUpperCase();
       _noteController.text = widget.editKhachHang!.ghiChu!;
-    } 
+    }
     // else {
-    //   /* 
-    //   Nếu là thêm mới Độc Giả, thì thiết lập sẵn Creation và ExpriationDate 
+    //   /*
+    //   Nếu là thêm mới khách hàng, thì thiết lập sẵn Creation và ExpriationDate
     //   CreationDate là DateTime.now()
-    //   ExpriationDate là DateTime.now() + 6 tháng 
+    //   ExpriationDate là DateTime.now() + 6 tháng
     //   */
     //   setCreationExpriationDate(DateTime.now());
     // }
@@ -167,6 +167,12 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
                 ),
                 const SizedBox(height: 10),
                 LabelTextFormField(
+                  labelText: 'Căn cước công dân',
+                  controller: _identityController,
+                ),
+                //
+                const SizedBox(height: 10),
+                LabelTextFormField(
                   labelText: 'Họ Tên',
                   controller: _fullnameController,
                 ),
@@ -188,33 +194,31 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
                 ),
                 //
                 const SizedBox(height: 10),
+                LabelTextFormField(
+                  labelText: 'Giấy phép lái xe',
+                  controller: _lincenseController,
+                  customValidator: (value){
+                    final RegExp regex = RegExp(r'^([A-Za-z]+\d*,\s*)+[A-Za-z]+\d*$');
+                    if (!regex.hasMatch(value!)) {
+                      return 'Định dạng nhập sai, vui lòng nhập theo dạng A1, B2,...';
+                    }
+                    return null; // Return null if the input is valid
+                  },
+                ),
+                const SizedBox(height: 10),
                 const Text(
-                  'Giấy phép lái xe',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  '*Theo định dạng Ax, Bx,... ',
+                  style: TextStyle(fontStyle: FontStyle.italic),
                 ),
                 const SizedBox(height: 4),
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  child: Text(_lincenseController.text, style: const TextStyle(
-                    fontWeight: FontWeight.w300,
-                    fontSize: 16
-                  ),),
-                ),
 
                 //
-                 const SizedBox(height: 10),
+                const SizedBox(height: 10),
                 LabelTextFormField(
                   labelText: 'Ghi chú',
                   controller: _noteController,
                 ),
                 //
-                if (widget.editKhachHang == null) ...[
-                  const SizedBox(height: 10),
-                  Text(
-                    '*Thu tiền tạo thẻ ',
-                    style: const TextStyle(fontStyle: FontStyle.italic),
-                  )
-                ],
                 const SizedBox(height: 50),
                 Align(
                   alignment: Alignment.center,

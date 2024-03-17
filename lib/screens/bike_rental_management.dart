@@ -2,6 +2,7 @@ import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
+import 'package:rent_bik/screens/bike_manage/bike_manage.dart';
 import 'package:rent_bik/screens/customer_manage/customer_manage.dart';
 
 import '../components/doi_ma_pin.dart';
@@ -41,18 +42,18 @@ class _BikeRentalManagementState extends State<BikeRentalManagement> with Ticker
             color: Theme.of(context).colorScheme.background,
             child: Column(
               children: [
-                WindowTitleBarBox(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: MoveWindow(),
-                      ),
-                      MinimizeWindowButton(colors: windowButtonColors),
-                      MaximizeWindowButton(colors: windowButtonColors),
-                      CloseWindowButton(),
-                    ],
-                  ),
-                ),
+                // WindowTitleBarBox(
+                //   child: Row(
+                //     children: [
+                //       Expanded(
+                //         child: MoveWindow(),
+                //       ),
+                //       MinimizeWindowButton(colors: windowButtonColors),
+                //       MaximizeWindowButton(colors: windowButtonColors),
+                //       CloseWindowButton(),
+                //     ],
+                //   ),
+                // ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6.0),
                   child: Row(
@@ -171,7 +172,11 @@ class _BikeRentalManagementState extends State<BikeRentalManagement> with Ticker
             child: TabBarView(
               controller: _tabController,
               children: const [
-                //CustomerManage()
+                CustomerManage(),
+                BikeManage(),
+                BikeManage(),
+                BikeManage(),
+                BikeManage(),
               ],
             ),
           ),
