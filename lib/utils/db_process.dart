@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:rent_bik/models/khach_hang.dart';
+import 'package:rent_bik/models/xe.dart';
 import 'package:rent_bik/utils/common_variables.dart';
 import 'package:rent_bik/utils/extesion.dart';
 import 'package:sqflite/utils/utils.dart';
@@ -122,7 +123,7 @@ class DbProcess {
       await _database.rawQuery(
         '''
           select count(MaKhachHang) from KhachHang 
-          where Hoten like ?
+          where HoTen like ?
           ''',
         ['%${str.toLowerCase()}%'],
       ),
@@ -154,6 +155,111 @@ class DbProcess {
 
   Future<void> deleteKhachHang(String maKhachHang) async {
     await _database.rawDelete('delete from KhachHang where MaKhachHang  = ?', [maKhachHang]);
+  }
+
+  //
+  // CODING XE HERE
+  //
+
+  Future<List<Xe>> queryXe({
+    required int numberRowIgnore,
+  }) async {
+    /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
+    List<Map<String, dynamic>> data = await _database.rawQuery(
+      '''
+      select * from Xe 
+      limit ?, 8
+      ''',
+      [numberRowIgnore],
+    );
+
+    List<Xe> danhSachXe = [];
+
+    for (var element in data) {
+      danhSachXe.add(
+        Xe(
+            element['MaXe'],
+            element['TinhTrang'],
+            element['GiaThue'],
+            element['HangGPLX'],
+            element['GhiChu']),
+      );
+    }
+
+    return danhSachXe;
+  }
+
+  Future<List<Xe>> queryXeFullnameWithString({
+    required String str,
+    required int numberRowIgnore,
+  }) async {
+    /* Lấy 10 dòng dữ liệu Độc Giả được thêm gần đây */
+    List<Map<String, dynamic>> data = await _database.rawQuery(
+      '''
+      select * from DocGia 
+      where HoTen like ? or SoDienThoai like ?
+      limit ?, 8
+      ''',
+      ['%$str%', '%$str%', numberRowIgnore],
+    );
+    List<Xe> danhSachXe = [];
+
+    for (var element in data) {
+      danhSachXe.add(
+        Xe(
+          element['MaXe'],
+            element['TinhTrang'],
+            element['GiaThue'],
+            element['HangGPLX'],
+            element['GhiChu'],
+        ),
+      );
+    }
+
+    return danhSachXe;
+  }
+
+  Future<int> queryCountXe() async {
+    return firstIntValue(
+        await _database.rawQuery('select count(MaXe) from Xe'))!;
+  }
+
+  Future<int> queryCountXeFullnameWithString(String str) async {
+    return firstIntValue(
+      await _database.rawQuery(
+        '''
+          select count(MaXe) from Xe 
+          where MaXe like ?
+          ''',
+        ['%${str.toLowerCase()}%'],
+      ),
+    )!;
+  }
+
+  Future<int> insertXe(Xe newXe) async {
+    return await _database.insert('Xe', newXe.toMap());
+  }
+
+  Future<void> updateXe(Xe updatedXe) async {
+    await _database.rawUpdate(
+      '''
+      update Xe 
+      set TinhTrang = ?, GiaThue = ?, 
+      HangGPLX = ?, GhiChu = ?
+      where MaXe  = ?
+      ''',
+      [
+        updatedXe.tinhTrang,
+        updatedXe.giaThue,
+        updatedXe.hangGPLX,
+        updatedXe.ghiChu,
+        updatedXe.maXe,
+      ],
+    );
+  }
+
+  Future<void> deleteXe(String maXe) async {
+    await _database.rawDelete('delete from Xe where MaXe  = ?', [maXe]);
   }
 
 }

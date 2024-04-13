@@ -3,89 +3,84 @@ import 'package:flutter/material.dart';
 import 'package:rent_bik/components/label_text_form_field.dart';
 import 'package:rent_bik/components/label_text_form_field_date_picker.dart';
 import 'package:rent_bik/main.dart';
-import 'package:rent_bik/models/khach_hang.dart';
+import 'package:rent_bik/models/xe.dart';
 import 'package:rent_bik/utils/common_variables.dart';
 import 'package:rent_bik/utils/extesion.dart';
 
-class AddEditCustomerForm extends StatefulWidget {
-  const AddEditCustomerForm({super.key, this.editKhachHang});
+class AddEditBikeForm extends StatefulWidget {
+  const AddEditBikeForm({super.key, this.editXe});
 
-  final KhachHang? editKhachHang;
+  final Xe? editXe;
 
   @override
-  State<AddEditCustomerForm> createState() => _AddEditCustomerFormState();
+  State<AddEditBikeForm> createState() => _AddEditBikeFormState();
 }
 
-class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
+class _AddEditBikeFormState extends State<AddEditBikeForm> {
   final _formKey = GlobalKey<FormState>();
   bool _isProcessing = false;
 
-  final _identityController = TextEditingController();
+  // Biển số xe
+  final _plateController = TextEditingController();
 
-  final _fullnameController = TextEditingController();
+  final _conditionController = TextEditingController();
 
-  final _dobController = TextEditingController();
-
-  final _phoneController = TextEditingController();
+  final _rentCostController = TextEditingController();
 
   final _noteController = TextEditingController();
 
   final _lincenseController = TextEditingController();
 
-  final _totalTiabilitiesController = TextEditingController();
-
-  void saveKhachHang(BuildContext context) async {
+  void saveXe(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isProcessing = true;
       });
 
-      if (widget.editKhachHang == null) {
-        KhachHang newKhachHang = KhachHang(
-          _identityController.text,
-          _fullnameController.text.toLowerCase(),
-          vnDateFormat.parse(_dobController.text),
-          _phoneController.text,
-          _lincenseController.text.toLowerCase(),
-          _noteController.text,
-        );
+      if (widget.editXe == null) {
+        try {
+          Xe newXe = Xe(
+            _plateController.text.toLowerCase(),
+            _conditionController.text.toLowerCase(),
+            int.parse(_rentCostController.text),
+            _lincenseController.text.toLowerCase(),
+            _noteController.text,
+          );
 
-        int returningId = await dbProcess.insertKhachHang(newKhachHang);
+          int returningId = await dbProcess.insertXe(newXe);
 
-        if (mounted) {
-          Navigator.of(context).pop(newKhachHang);
-        }
-      } else {
-        widget.editKhachHang!.hoTen = _fullnameController.text.toLowerCase();
-        widget.editKhachHang!.ngaySinh =
-            vnDateFormat.parse(_dobController.text);
-        widget.editKhachHang!.maKhachHang = _identityController.text;
-        widget.editKhachHang!.soDienThoai = _phoneController.text;
-        widget.editKhachHang!.hangGPLX = _lincenseController.text.toLowerCase();
-        widget.editKhachHang!.ghiChu = _noteController.text;
+          if (mounted) {
+            Navigator.of(context).pop(newXe);
+          } else {
+            widget.editXe!.maXe = _plateController.text;
+            widget.editXe!.tinhTrang = _conditionController.text;
+            widget.editXe!.hangGPLX = _lincenseController.text.toLowerCase();
+            widget.editXe!.ghiChu = _noteController.text;
 
-        await dbProcess.updateKhachHang(widget.editKhachHang!);
+            await dbProcess.updateXe(widget.editXe!);
 
-        if (mounted) {
-          Navigator.of(context).pop('updated');
-        }
-      }
+            if (mounted) {
+              Navigator.of(context).pop('updated');
+            }
+          }
 
-      setState(() {
-        _isProcessing = false;
-      });
+          setState(() {
+            _isProcessing = false;
+          });
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(widget.editKhachHang == null
-                ? 'Thêm khách hàng thành công.'
-                : 'Cập nhật thông tin thành công'),
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 3),
-            width: 300,
-          ),
-        );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(widget.editXe == null
+                    ? 'Thêm khách hàng thành công.'
+                    : 'Cập nhật thông tin thành công'),
+                behavior: SnackBarBehavior.floating,
+                duration: const Duration(seconds: 3),
+                width: 300,
+              ),
+            );
+          }
+        } catch (e) {}
       }
     }
   }
@@ -93,18 +88,18 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
   @override
   void initState() {
     super.initState();
-    if (widget.editKhachHang != null) {
+    if (widget.editXe != null) {
       /*
       Nếu là chỉnh sửa khách hàng
       thì phải fill thông tin vào của khách hàng cần chỉnh sửa vào form
       */
-      _identityController.text = widget.editKhachHang!.maKhachHang;
-      _fullnameController.text =
-          widget.editKhachHang!.hoTen.capitalizeFirstLetterOfEachWord();
-      _dobController.text = widget.editKhachHang!.ngaySinh.toVnFormat();
-      _phoneController.text = widget.editKhachHang!.soDienThoai;
-      _lincenseController.text = widget.editKhachHang!.hangGPLX!.toUpperCase();
-      _noteController.text = widget.editKhachHang!.ghiChu!;
+      _plateController.text = widget.editXe!.maXe;
+      _conditionController.text =
+          widget.editXe!.hoTen.capitalizeFirstLetterOfEachWord();
+      _rentCostController.text = widget.editXe!.ngaySinh.toVnFormat();
+      _phoneController.text = widget.editXe!.soDienThoai;
+      _lincenseController.text = widget.editXe!.hangGPLX!.toUpperCase();
+      _noteController.text = widget.editXe!.ghiChu!;
     }
     // else {
     //   /*
@@ -119,9 +114,9 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
   @override
   void dispose() {
     /* dispose các controller để tránh lãng phí bộ nhớ */
-    _fullnameController.dispose();
-    _dobController.dispose();
-    _identityController.dispose();
+    _conditionController.dispose();
+    _rentCostController.dispose();
+    _plateController.dispose();
     _phoneController.dispose();
     _lincenseController.dispose();
     _noteController.dispose();
@@ -150,7 +145,7 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
                 Row(
                   children: [
                     Text(
-                      widget.editKhachHang == null
+                      widget.editXe == null
                           ? 'THÊM KHÁCH HÀNG'
                           : 'SỬA THÔNG TIN KHÁCH HÀNG',
                       style: const TextStyle(
@@ -168,21 +163,21 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
                 const SizedBox(height: 10),
                 LabelTextFormField(
                   labelText: 'Căn cước công dân',
-                  controller: _identityController,
+                  controller: _plateController,
                 ),
                 //
                 const SizedBox(height: 10),
                 LabelTextFormField(
                   labelText: 'Họ Tên',
-                  controller: _fullnameController,
+                  controller: _conditionController,
                 ),
                 //
                 const SizedBox(height: 10),
                 LabelTextFieldDatePicker(
                   labelText: 'Ngày sinh',
-                  controller: _dobController,
-                  initialDateInPicker: widget.editKhachHang != null
-                      ? widget.editKhachHang!.ngaySinh
+                  controller: _rentCostController,
+                  initialDateInPicker: widget.editXe != null
+                      ? widget.editXe!.ngaySinh
                       : DateTime.now().subYears(18),
                   lastDate: DateTime.now(),
                 ),
@@ -197,7 +192,7 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
                 LabelTextFormField(
                   labelText: 'Giấy phép lái xe',
                   controller: _lincenseController,
-                  customValidator: (value){
+                  customValidator: (value) {
                     final RegExp regex = RegExp(r'^[A-Z]\d+(,\s*[A-Z]\d+)*$');
                     if (!regex.hasMatch(value!)) {
                       return 'Định dạng nhập sai, vui lòng nhập theo dạng A1, B2,...';
@@ -232,7 +227,7 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
                           ),
                         )
                       : FilledButton(
-                          onPressed: () => saveKhachHang(context),
+                          onPressed: () => saveXe(context),
                           style: FilledButton.styleFrom(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),

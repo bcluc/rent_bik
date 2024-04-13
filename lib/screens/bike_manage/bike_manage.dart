@@ -81,6 +81,7 @@ class _BikeManageState extends State<BikeManage> with TickerProviderStateMixin {
               children: const [
                 BikeWarehouse(),
                 BikeWarehouse(),
+                BikeWarehouse()
               ],
             ),
           ),

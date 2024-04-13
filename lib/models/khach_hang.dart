@@ -19,7 +19,7 @@ class KhachHang {
 
   Map<String, dynamic> toMap() {
     return {
-      'MaKhachHang':maKhachHang,
+      'MaKhachHang': maKhachHang,
       'HoTen': hoTen,
       'NgaySinh': ngaySinh.toVnFormat(),
       'SoDienThoai': soDienThoai,
