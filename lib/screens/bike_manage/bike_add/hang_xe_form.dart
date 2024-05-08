@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:rent_bik/cubits/selected_hang_xe.dart';
-import 'package:rent_bik/dto/hang_xe_dto.dart';
 import 'package:rent_bik/main.dart';
 import 'package:rent_bik/models/hang_xe.dart';
 import 'package:rent_bik/utils/extesion.dart';
@@ -143,7 +142,7 @@ class _HangXeFormState extends State<HangXeForm> {
                     children: List.generate(
                       _filteredHangXes.length,
                       (index) {
-                        final HangXe = _filteredHangXes[index];
+                        final hangXe = _filteredHangXes[index];
                         bool isHover = false;
 
                         return StatefulBuilder(
@@ -186,7 +185,7 @@ class _HangXeFormState extends State<HangXeForm> {
                                           for (var selectedHangXe
                                               in selectedHangXes) {
                                             if (selectedHangXe.maHangXe ==
-                                                HangXe.maHangXe) {
+                                                hangXe.maHangXe) {
                                               isSelected = true;
                                               break;
                                             }
@@ -208,7 +207,7 @@ class _HangXeFormState extends State<HangXeForm> {
                                                       context
                                                           .read<
                                                               SelectedHangXeCubit>()
-                                                          .add(HangXe);
+                                                          .add(hangXe);
 
                                                       setStateListItem(() {});
                                                     },
@@ -222,7 +221,7 @@ class _HangXeFormState extends State<HangXeForm> {
                                                       context
                                                           .read<
                                                               SelectedHangXeCubit>()
-                                                          .remove(HangXe);
+                                                          .remove(hangXe);
                                                       setStateListItem(() {});
                                                     },
                                                     icon: const Icon(

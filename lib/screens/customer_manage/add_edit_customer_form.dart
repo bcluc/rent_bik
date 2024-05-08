@@ -52,6 +52,7 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
         );
 
         int returningId = await dbProcess.insertKhachHang(newKhachHang);
+        newKhachHang.maKhachHang = returningId;
 
         if (mounted) {
           Navigator.of(context).pop(newKhachHang);

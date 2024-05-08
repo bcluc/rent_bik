@@ -1,13 +1,19 @@
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
 import 'package:rent_bik/components/label_text_form_field.dart';
 import 'package:rent_bik/components/label_text_form_field_date_picker.dart';
 import 'package:rent_bik/cubits/selected_dong_xe_cubit.dart';
 import 'package:rent_bik/cubits/selected_hang_xe.dart';
 import 'package:rent_bik/dto/xe_dto.dart';
 import 'package:rent_bik/main.dart';
+import 'package:rent_bik/models/dong_xe.dart';
+import 'package:rent_bik/models/hang_xe.dart';
 import 'package:rent_bik/models/xe.dart';
+import 'package:rent_bik/screens/bike_manage/bike_add/bike_form.dart';
+import 'package:rent_bik/screens/bike_manage/bike_add/dong_xe_form.dart';
+import 'package:rent_bik/screens/bike_manage/bike_add/hang_xe_form.dart';
 import 'package:rent_bik/utils/common_variables.dart';
 import 'package:rent_bik/utils/extesion.dart';
 
@@ -28,18 +34,22 @@ class _AddEditBikeFormState extends State<AddEditBikeForm> {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (_) => widget.editXe == null ? SelectedDongXeCubit() : SelectedDongXeCubit.of(widget.editXe!.dongXes),
+            create: (_) => widget.editXe == null
+                ? SelectedDongXeCubit()
+                : SelectedDongXeCubit.of(widget.editXe!.dongXe as List<DongXe>),
           ),
           BlocProvider(
-            create: (_) => widget.editXe == null ? SelectedHangXeCubit() : SelectedHangXeCubit.of(widget.editXe!.hangXes),
+            create: (_) => widget.editXe == null
+                ? SelectedHangXeCubit()
+                : SelectedHangXeCubit.of(widget.editXe!.hangXe as List<HangXe>),
           ),
         ],
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Expanded(
-              child: DauSachForm(
-                editDauSach: widget.editDauSach,
+              child: BikeForm(
+                editXe: widget.editXe,
               ),
             ),
             const Gap(12),
@@ -47,11 +57,11 @@ class _AddEditBikeFormState extends State<AddEditBikeForm> {
               child: Column(
                 children: [
                   Expanded(
-                    child: TacGiaForm(),
+                    child: DongXeForm(),
                   ),
                   Gap(12),
                   Expanded(
-                    child: TheLoaiForm(),
+                    child: HangXeForm(),
                   ),
                 ],
               ),

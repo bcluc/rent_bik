@@ -38,7 +38,7 @@ class DbProcess {
             BienSoXe TEXT,
             TinhTrang TEXT,
             GiaThue INTEGER,
-            HangGPLX TEXT,
+            HangGPLX TEXT
           );
 
           CREATE TABLE DongXe(
@@ -75,7 +75,7 @@ class DbProcess {
             NgayMua TEXT,
             NgayHetHan TEXT,
             SoTien INTEGER
-          )
+          );
 
           CREATE TABLE BaoHiemXe_Xe(
             MaxBHX INTEGER,
@@ -502,6 +502,48 @@ class DbProcess {
 
   Future<void> deleteXe(int maXe) async {
     await _database.rawDelete('delete from Xe where MaXe  = ?', [maXe]);
+  }
+
+  Future<void> deleteXeWithId(int maXe) async {
+    /* 
+    Vì ON DELETE CASCADE không hoạt động trong flutter 
+
+    Nhưng khi delete Xe trong DB Brower for SQLite thì ON DELETE CASCADE lại hoạt động, 
+    nó tự động xoát các dòng liên quan trong bảng TacGia_DauSach, DauSach_TheLoai )
+
+    => Vậy nên, phải tự delete thủ công trong Flutter 
+    */
+    /* Delete các Tác giả cũ đang gắn với Đầu sách */
+    await _database.rawDelete(
+      '''
+      delete from DongXe_Xe
+      where MaXe = ?
+      ''',
+      [maXe],
+    );
+    /* Delete các Thể loại cũ đang gắn với Đầu sách */
+    await _database.rawDelete(
+      '''
+      delete from HangXe_Xe
+      where MaXe = ?
+      ''',
+      [maXe],
+    );
+    await _database.rawDelete(
+      '''
+      delete from BaoHiemXe_Xe
+      where MaXe = ?
+      ''',
+      [maXe],
+    );
+    /* Delete Đầu Sách */
+    await _database.rawDelete(
+      '''
+      delete from Xe
+      where MaXe = ?
+      ''',
+      [maXe],
+    );
   }
 
   //
