@@ -1,25 +1,28 @@
-class Xe{
-  String maXe;
+class Xe {
+  int? maXe;
+  String bienSoXe;
   String tinhTrang;
   int giaThue;
   String? hangGPLX;
-  String? ghiChu;
-  
-  Xe(
-    this.maXe,
-    this.tinhTrang,
-    this.giaThue,
-    this.hangGPLX,
-    this.ghiChu
-  );
+  String loaiXe;
+  int giaMua;
+  DateTime ngayMua;
+  int soHanhTrinh;
 
-  Map<String, dynamic> toMap(){
-    return{
+  Xe(this.maXe, this.bienSoXe, this.tinhTrang, this.giaThue, this.hangGPLX,
+      this.loaiXe, this.giaMua, this.ngayMua, this.soHanhTrinh);
+
+  Map<String, dynamic> toMap() {
+    return {
       'MaXe': maXe,
+      'BienSoXe': bienSoXe,
       'TinhTrang': tinhTrang,
       'GiaThue': giaThue,
       'HangGPLX': hangGPLX,
-      'GhiChu': ghiChu
+      'LoaiXe': loaiXe,
+      'GiaMua': giaMua,
+      'NgayMua': ngayMua,
+      'SoHanhTrinh': soHanhTrinh,
     };
   }
 }

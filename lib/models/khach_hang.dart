@@ -3,6 +3,7 @@ import 'package:rent_bik/utils/extesion.dart';
 class KhachHang {
   KhachHang(
     this.maKhachHang,
+    this.cccd,
     this.hoTen,
     this.ngaySinh,
     this.soDienThoai,
@@ -10,7 +11,8 @@ class KhachHang {
     this.ghiChu,
   );
 
-  String maKhachHang;
+  int? maKhachHang;
+  String cccd;
   String hoTen;
   DateTime ngaySinh;
   String soDienThoai;
@@ -19,7 +21,7 @@ class KhachHang {
 
   Map<String, dynamic> toMap() {
     return {
-      'MaKhachHang': maKhachHang,
+      'CCCD': cccd,
       'HoTen': hoTen,
       'NgaySinh': ngaySinh.toVnFormat(),
       'SoDienThoai': soDienThoai,

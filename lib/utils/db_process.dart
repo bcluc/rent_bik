@@ -1,5 +1,10 @@
 import 'dart:io';
 
+import 'package:rent_bik/dto/dong_xe_dto.dart';
+import 'package:rent_bik/dto/hang_xe_dto.dart';
+import 'package:rent_bik/dto/xe_dto.dart';
+import 'package:rent_bik/models/dong_xe.dart';
+import 'package:rent_bik/models/hang_xe.dart';
 import 'package:rent_bik/models/khach_hang.dart';
 import 'package:rent_bik/models/xe.dart';
 import 'package:rent_bik/utils/common_variables.dart';
@@ -19,12 +24,66 @@ class DbProcess {
         await db.execute(
           '''
           CREATE TABLE KhachHang(
-            MaKhachHang TEXT PRIMARY KEY,
+            MaKhachHang INTEGER PRIMARY KEY AUTOINCREMENT,
+            CCCD TEXT,
             HoTen TEXT,
             NgaySinh TEXT,
             SoDienThoai TEXT,
             HangGPLX TEXT,
             GhiChu TEXT
+          );
+          
+          CREATE TABLE Xe(
+            MaXe INTEGER PRIMARY KEY AUTOINCREMENT,
+            BienSoXe TEXT,
+            TinhTrang TEXT,
+            GiaThue INTEGER,
+            HangGPLX TEXT,
+          );
+
+          CREATE TABLE DongXe(
+            MaDongXe INTEGER PRIMARY KEY AUTOINCREMENT, 
+            TenDongXe TEXT
+          );
+
+          CREATE TABLE DongXe_Xe(
+            MaDongXe INTEGER,
+            MaXe INTEGER
+            PRIMARY KEY (MaDongXe, MaXe),
+
+            FOREIGN KEY (MaDongXe) REFERENCES DongXe(MaDongXe) ON DELETE CASCADE,
+            FOREIGN KEY (MaXe) REFERENCES Xe(MaXe) ON DELETE CASCADE
+          );
+
+          CREATE TABLE HangXe(
+            MaHangXe INTEGER PRIMARY KEY AUTOINCREMENT, 
+            TenHangXe TEXT
+          );
+
+          CREATE TABLE HangXe_Xe(
+            MaHangXe INTEGER,
+            MaXe INTEGER
+            PRIMARY KEY (MaHangXe, MaXe),
+
+            FOREIGN KEY (MaHangXe) REFERENCES HangXe(MaHangXe) ON DELETE CASCADE,
+            FOREIGN KEY (MaXe) REFERENCES Xe(MaXe) ON DELETE CASCADE
+          );
+
+          CREATE TABLE BaoHiemXe(
+            MaBHX INTEGER PRIMARY KEY AUTOINCREMENT,
+            SoBHX TEXT,
+            NgayMua TEXT,
+            NgayHetHan TEXT,
+            SoTien INTEGER
+          )
+
+          CREATE TABLE BaoHiemXe_Xe(
+            MaxBHX INTEGER,
+            MaXe INTEGER
+            PRIMARY KEY (MaBHX, MaXe),
+
+            FOREIGN KEY (MaBHX) REFERENCES BaoHiemXe(MaBHX) ON DELETE CASCADE,
+            FOREIGN KEY (MaXe) REFERENCES Xe(MaXe) ON DELETE CASCADE
           );
 
 
@@ -71,6 +130,7 @@ class DbProcess {
       danhSachKhachHang.add(
         KhachHang(
             element['MaKhachHang'],
+            element['CCCD'],
             element['HoTen'],
             vnDateFormat.parse(element['NgaySinh'] as String),
             element['SoDienThoai'],
@@ -101,11 +161,12 @@ class DbProcess {
       danhSachKhachHang.add(
         KhachHang(
           element['MaKhachHang'],
-            element['HoTen'],
-            vnDateFormat.parse(element['NgaySinh'] as String),
-            element['SoDienThoai'],
-            element['HangGPLX'],
-            element['GhiChu'],
+          element['CCCD'],
+          element['HoTen'],
+          vnDateFormat.parse(element['NgaySinh'] as String),
+          element['SoDienThoai'],
+          element['HangGPLX'],
+          element['GhiChu'],
         ),
       );
     }
@@ -138,11 +199,12 @@ class DbProcess {
     await _database.rawUpdate(
       '''
       update KhachHang 
-      set HoTen = ?, NgaySinh = ?, SoDienThoai = ?, 
+      set CCCD = ?, HoTen = ?, NgaySinh = ?, SoDienThoai = ?, 
       HangGPLX = ?, GhiChu = ?
       where MaKhachHang  = ?
       ''',
       [
+        updatedKhachHang.cccd,
         updatedKhachHang.hoTen,
         updatedKhachHang.ngaySinh.toVnFormat(),
         updatedKhachHang.soDienThoai,
@@ -153,8 +215,9 @@ class DbProcess {
     );
   }
 
-  Future<void> deleteKhachHang(String maKhachHang) async {
-    await _database.rawDelete('delete from KhachHang where MaKhachHang  = ?', [maKhachHang]);
+  Future<void> deleteKhachHang(int maKhachHang) async {
+    await _database.rawDelete(
+        'delete from KhachHang where MaKhachHang  = ?', [maKhachHang]);
   }
 
   //
@@ -178,15 +241,191 @@ class DbProcess {
     for (var element in data) {
       danhSachXe.add(
         Xe(
-            element['MaXe'],
-            element['TinhTrang'],
-            element['GiaThue'],
-            element['HangGPLX'],
-            element['GhiChu']),
+          element['MaXe'],
+          element['BienSoXe'],
+          element['TinhTrang'],
+          element['GiaThue'],
+          element['HangGPLX'],
+          element['LoaiXe'],
+          element['GiaMua'],
+          element['NgayMua'],
+          element['SoHanhTrinh'],
+        ),
       );
     }
 
     return danhSachXe;
+  }
+
+  Future<List<XeDTO>> queryXeDto() async {
+    List<Map<String, dynamic>> data = await _database.rawQuery(
+      '''
+      select * from Xe 
+      ''',
+    );
+
+    List<XeDTO> xes = [];
+
+    for (var element in data) {
+      final xe = XeDTO(
+        element['MaXe'],
+        element['BienSoXe'],
+        element['TinhTrang'],
+        element['GiaThue'],
+        element['GiaMua'],
+        element['LoaiXe'],
+        element['HangGPLX'],
+        null,
+        null,
+        element['NgayMua'],
+        null,
+        element['SoHanhTrinh'],
+      );
+
+      QueryCursor cur = await _database.rawQueryCursor(
+        '''
+        select MaDongXe, TenDongXe from DongXe_Xe join DongXe USING(MaDongXe)
+        where MaXe = ?
+        ''',
+        [xe.maXe],
+      );
+
+      while (await cur.moveNext()) {
+        xe.dongXe = DongXe(
+          cur.current['MaDongXe'] as int,
+          cur.current['TenDongXe'] as String,
+        );
+      }
+
+      cur = await _database.rawQueryCursor(
+        '''
+        select MaHangXe, TenHangXe from HangXe_Xe join HangXe USING(MaHangXe)
+        where MaXe = ?
+        ''',
+        [xe.maXe],
+      );
+
+      while (await cur.moveNext()) {
+        xe.hangXe = HangXe(
+          cur.current['MaHangXe'] as int,
+          cur.current['TenHangXe'] as String,
+        );
+      }
+      // BHX
+      cur = await _database.rawQueryCursor(
+        '''
+        select MaBHX from BaoHiemXe_Xe join BaoHiemXe USING(MaBHX)
+        where MaXe = ?
+        ''',
+        [xe.maXe],
+      );
+
+      while (await cur.moveNext()) {
+        xe.maBHX = cur.current['MaBHX'] as int;
+      }
+
+      xes.add(xe);
+    }
+
+    return xes;
+  }
+
+  Future<int> insertXeDto(XeDTO newXeDto) async {
+    // Insert Xe
+    int returningId = await _database.insert(
+      'Xe',
+      {
+        'BienSoXe': newXeDto.bienSoXe,
+        'TinhTrang': newXeDto.tinhTrang,
+        'GiaThue': newXeDto.giaThue,
+        'GiaMua': newXeDto.giaMua,
+        'LoaiXe': newXeDto.loaiXe,
+        'HangGPLX': newXeDto.hangGPLX,
+        'NgayMua': newXeDto.ngayMua,
+        'SoHanhTrinh': newXeDto.soHanhTrinh,
+      },
+    );
+
+    // Insert DongXe_Xe
+    await _database.insert(
+      'DongXe_Xe',
+      {
+        'MaDongXe': newXeDto.dongXe!.maDongXe,
+        'MaXe': returningId,
+      },
+    );
+
+    // Insert HangXe_Xe
+    await _database.insert(
+      'HangXe_Xe',
+      {
+        'MaHangXe': newXeDto.hangXe!.maHangXe,
+        'MaXe': returningId,
+      },
+    );
+
+    return returningId;
+  }
+
+  Future<void> updateXeDto(XeDTO updatedXeDto) async {
+    /* Delete các Dòng xe cũ đang gắn với Xe */
+    await _database.rawDelete(
+      '''
+      delete from DongXe_Xe
+      where MaXe = ?
+      ''',
+      [updatedXeDto.maXe],
+    );
+    /* Delete các Hãng cũ đang gắn với Xe */
+    await _database.rawDelete(
+      '''
+      delete from HangXe_Xe
+      where MaXe = ?
+      ''',
+      [updatedXeDto.maXe],
+    );
+    /* Cập nhật Xe */
+    await _database.rawUpdate(
+      '''
+      update Xe
+      set BienSoXe = ?,
+      TinhTrang = ?,
+      GiaThue = ?,
+      GiaMua = ?,
+      LoaiXe = ?,
+      HangGPLX = ?,
+      NgayMua = ?,
+      SoHanhTrinh = ?
+      where MaDauSach = ?
+      ''',
+      [
+        updatedXeDto.bienSoXe,
+        updatedXeDto.tinhTrang,
+        updatedXeDto.giaThue,
+        updatedXeDto.giaMua,
+        updatedXeDto.loaiXe,
+        updatedXeDto.hangGPLX,
+        updatedXeDto.ngayMua,
+        updatedXeDto.soHanhTrinh,
+        updatedXeDto.maXe,
+      ],
+    );
+    /* Thêm mới các Tác giả */
+    await _database.insert(
+      'HangXe_Xe',
+      {
+        'MaHangXe': updatedXeDto.hangXe!.maHangXe,
+        'MaXe': updatedXeDto.maXe,
+      },
+    );
+    await _database.insert(
+      'DongXe_Xe',
+      {
+        'MaDongXe': updatedXeDto.dongXe!.maDongXe,
+        'MaXe': updatedXeDto.maXe,
+      },
+    );
+    /* DONE */
   }
 
   Future<List<Xe>> queryXeFullnameWithString({
@@ -197,7 +436,7 @@ class DbProcess {
     List<Map<String, dynamic>> data = await _database.rawQuery(
       '''
       select * from DocGia 
-      where HoTen like ? or SoDienThoai like ?
+      where MaXe like ? or BienSoXe like ?
       limit ?, 8
       ''',
       ['%$str%', '%$str%', numberRowIgnore],
@@ -208,10 +447,14 @@ class DbProcess {
       danhSachXe.add(
         Xe(
           element['MaXe'],
-            element['TinhTrang'],
-            element['GiaThue'],
-            element['HangGPLX'],
-            element['GhiChu'],
+          element['BienSoXe'],
+          element['TinhTrang'],
+          element['GiaThue'],
+          element['HangGPLX'],
+          element['LoaiXe'],
+          element['GiaMua'],
+          element['NgayMua'],
+          element['SoHanhTrinh'],
         ),
       );
     }
@@ -245,21 +488,225 @@ class DbProcess {
       '''
       update Xe 
       set TinhTrang = ?, GiaThue = ?, 
-      HangGPLX = ?, GhiChu = ?
+      HangGPLX = ?
       where MaXe  = ?
       ''',
       [
         updatedXe.tinhTrang,
         updatedXe.giaThue,
         updatedXe.hangGPLX,
-        updatedXe.ghiChu,
         updatedXe.maXe,
       ],
     );
   }
 
-  Future<void> deleteXe(String maXe) async {
+  Future<void> deleteXe(int maXe) async {
     await _database.rawDelete('delete from Xe where MaXe  = ?', [maXe]);
   }
 
+  //
+  // DÒNG XE
+  //
+
+  Future<List<DongXe>> queryDongXes() async {
+    List<Map<String, dynamic>> data = await _database.rawQuery(
+      '''
+      select * from DongXe;
+      ''',
+    );
+
+    List<DongXe> dongXes = [];
+
+    for (var element in data) {
+      dongXes.add(
+        DongXe(
+          element['MaDongXe'],
+          element['TenDongXe'],
+        ),
+      );
+    }
+
+    return dongXes;
+  }
+
+  Future<List<DongXeDto>> queryDongXeDtos() async {
+    List<Map<String, dynamic>> data = await _database.rawQuery(
+      '''
+      select * from DongXe;
+      ''',
+    );
+
+    List<DongXeDto> dongXes = [];
+
+    for (var element in data) {
+      final dongXe = DongXeDto(
+        element['MaDongXe'],
+        element['TenDongXe'],
+        0,
+      );
+
+      List<Map<String, dynamic>> soLuongXeData = await _database.rawQuery(
+        '''
+        select count(MaXe) as SoLuong
+        from DongXe_Xe
+        where MaDongXe = ?
+        ''',
+        [dongXe.maDongXe],
+      );
+
+      if (soLuongXeData.isNotEmpty) {
+        dongXe.soLuongXe = soLuongXeData[0]['SoLuong'];
+      }
+
+      dongXes.add(dongXe);
+    }
+
+    return dongXes;
+  }
+
+  Future<int> insertDongXe(DongXe newDongXe) async {
+    return await _database.insert(
+      'DongXe',
+      {
+        'TenDongXe': newDongXe.tenDongXe,
+      },
+    );
+  }
+
+  Future<void> updateDongXe(int maDongXe, String tenDongXe) async {
+    await _database.rawUpdate(
+      '''
+      update DongXe
+      set TenDongXe = ?
+      where MaDongXe = ?
+      ''',
+      [
+        tenDongXe,
+        maDongXe,
+      ],
+    );
+  }
+
+  Future<void> deleteDongXeWithMaDongXe(int maDongXe) async {
+    /* Delete DauSach_TheLoai có liên quan */
+    await _database.rawDelete(
+      '''
+      delete from DongXe_Xe
+      where MaDongXe = ?
+      ''',
+      [maDongXe],
+    );
+
+    /* Delete TheLoai */
+    await _database.rawDelete(
+      '''
+      delete from DongXe 
+      where MaDongXe = ?
+      ''',
+      [maDongXe],
+    );
+  }
+
+  //
+  // HÃNG XE
+  //
+
+  Future<List<HangXe>> queryHangXes() async {
+    List<Map<String, dynamic>> data = await _database.rawQuery(
+      '''
+      select * from HangXe;
+      ''',
+    );
+
+    List<HangXe> hangXes = [];
+
+    for (var element in data) {
+      hangXes.add(
+        HangXe(
+          element['MaHangXe'],
+          element['TenHangXe'],
+        ),
+      );
+    }
+
+    return hangXes;
+  }
+
+  Future<List<HangXeDto>> queryHangXeDtos() async {
+    List<Map<String, dynamic>> data = await _database.rawQuery(
+      '''
+      select * from HangXe;
+      ''',
+    );
+
+    List<HangXeDto> hangXes = [];
+
+    for (var element in data) {
+      final hangXe = HangXeDto(
+        element['MaHangXe'],
+        element['TenHangXe'],
+        0,
+      );
+
+      List<Map<String, dynamic>> soLuongXeData = await _database.rawQuery(
+        '''
+        select count(MaXe) as SoLuong
+        from HangXe_Xe
+        where MaHangXe = ?
+        ''',
+        [hangXe.maHangXe],
+      );
+
+      if (soLuongXeData.isNotEmpty) {
+        hangXe.soLuongXe = soLuongXeData[0]['SoLuong'];
+      }
+
+      hangXes.add(hangXe);
+    }
+
+    return hangXes;
+  }
+
+  Future<int> insertHangXe(HangXe newHangXe) async {
+    return await _database.insert(
+      'HangXe',
+      {
+        'TenHangXe': newHangXe.tenHangXe,
+      },
+    );
+  }
+
+  Future<void> updateHangXe(int maHangXe, String tenHangXe) async {
+    await _database.rawUpdate(
+      '''
+      update HangXe
+      set TenHangXe = ?
+      where MaHangXe = ?
+      ''',
+      [
+        tenHangXe,
+        maHangXe,
+      ],
+    );
+  }
+
+  Future<void> deleteHangXeWithMaDongXe(int maHangXe) async {
+    /* Delete DauSach_TheLoai có liên quan */
+    await _database.rawDelete(
+      '''
+      delete from HangXe_Xe
+      where MaHangXe = ?
+      ''',
+      [maHangXe],
+    );
+
+    /* Delete TheLoai */
+    await _database.rawDelete(
+      '''
+      delete from HangXe 
+      where MaHangXe = ?
+      ''',
+      [maHangXe],
+    );
+  }
 }

@@ -42,6 +42,7 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
 
       if (widget.editKhachHang == null) {
         KhachHang newKhachHang = KhachHang(
+          null,
           _identityController.text,
           _fullnameController.text.toLowerCase(),
           vnDateFormat.parse(_dobController.text),
@@ -59,7 +60,7 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
         widget.editKhachHang!.hoTen = _fullnameController.text.toLowerCase();
         widget.editKhachHang!.ngaySinh =
             vnDateFormat.parse(_dobController.text);
-        widget.editKhachHang!.maKhachHang = _identityController.text;
+        widget.editKhachHang!.cccd = _identityController.text;
         widget.editKhachHang!.soDienThoai = _phoneController.text;
         widget.editKhachHang!.hangGPLX = _lincenseController.text.toLowerCase();
         widget.editKhachHang!.ghiChu = _noteController.text;
@@ -98,7 +99,7 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
       Nếu là chỉnh sửa khách hàng
       thì phải fill thông tin vào của khách hàng cần chỉnh sửa vào form
       */
-      _identityController.text = widget.editKhachHang!.maKhachHang;
+      _identityController.text = widget.editKhachHang!.cccd;
       _fullnameController.text =
           widget.editKhachHang!.hoTen.capitalizeFirstLetterOfEachWord();
       _dobController.text = widget.editKhachHang!.ngaySinh.toVnFormat();
@@ -197,7 +198,7 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
                 LabelTextFormField(
                   labelText: 'Giấy phép lái xe',
                   controller: _lincenseController,
-                  customValidator: (value){
+                  customValidator: (value) {
                     final RegExp regex = RegExp(r'^[A-Z]\d+(,\s*[A-Z]\d+)*$');
                     if (!regex.hasMatch(value!)) {
                       return 'Định dạng nhập sai, vui lòng nhập theo dạng A1, B2,...';

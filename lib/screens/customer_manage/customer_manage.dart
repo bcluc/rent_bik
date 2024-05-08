@@ -19,6 +19,7 @@ class CustomerManage extends StatefulWidget {
 class _CustomerManageState extends State<CustomerManage> {
 // Danh sách Tên các cột trong Bảng Khách Hàng
   final List<String> _colsName = [
+    '#',
     'CCCD',
     'Họ Tên',
     'Ngày sinh',
@@ -27,13 +28,13 @@ class _CustomerManageState extends State<CustomerManage> {
     'Ghi chú',
   ];
 
-    int _selectedRow = -1;
+  int _selectedRow = -1;
 
   /* 2 biến này không set final bởi vì nó sẽ thay đổi giá trị khi người dùng tương tác */
   late List<KhachHang> _readerRows;
   late int _readerCount;
 
-late final Future<void> _futureRecentReaders = _getRecentReaders();
+  late final Future<void> _futureRecentReaders = _getRecentReaders();
   Future<void> _getRecentReaders() async {
     /* 
     Delay 1 khoảng bằng thời gian animation của TabController 
@@ -214,7 +215,9 @@ late final Future<void> _futureRecentReaders = _getRecentReaders();
                     */
                     if (_searchController.text == value) {
                       _paginationController.text = '1';
-                      _readerCount = await dbProcess.queryCountKhachHangFullnameWithString(_searchController.text);
+                      _readerCount =
+                          await dbProcess.queryCountKhachHangFullnameWithString(
+                              _searchController.text);
                       _loadReadersOfPageIndex(1);
                     }
                   },
@@ -235,7 +238,8 @@ late final Future<void> _futureRecentReaders = _getRecentReaders();
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 18, horizontal: 16),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -255,7 +259,8 @@ late final Future<void> _futureRecentReaders = _getRecentReaders();
                                 context: context,
                                 builder: (ctx) => AlertDialog(
                                   title: const Text('Xác nhận'),
-                                  content: Text('Bạn có chắc xóa Khách hàng ${_readerRows[_selectedRow].hoTen}?'),
+                                  content: Text(
+                                      'Bạn có chắc xóa Khách hàng ${_readerRows[_selectedRow].hoTen}?'),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
@@ -331,9 +336,10 @@ late final Future<void> _futureRecentReaders = _getRecentReaders();
                         (index) {
                           KhachHang reader = _readerRows[index];
                           /* Thẻ Độc Giả quá hạn sẽ tô màu xám (black26) */
-                          TextStyle cellTextStyle = const TextStyle(color: Colors.black);
+                          TextStyle cellTextStyle =
+                              const TextStyle(color: Colors.black);
 
-                          return DataRow(                            
+                          return DataRow(
                             selected: _selectedRow == index,
                             onSelectChanged: (_) => setState(() {
                               _selectedRow = index;
@@ -354,9 +360,11 @@ late final Future<void> _futureRecentReaders = _getRecentReaders();
                               DataCell(
                                 /* Ràng buộc cho Chiều rộng Tối đa của cột Họ Tên = 150 */
                                 ConstrainedBox(
-                                  constraints: const BoxConstraints(maxWidth: 150),
+                                  constraints:
+                                      const BoxConstraints(maxWidth: 150),
                                   child: Text(
-                                    reader.hoTen.capitalizeFirstLetterOfEachWord(),
+                                    reader.hoTen
+                                        .capitalizeFirstLetterOfEachWord(),
                                     style: cellTextStyle,
                                   ),
                                 ),
@@ -375,7 +383,8 @@ late final Future<void> _futureRecentReaders = _getRecentReaders();
                               ),
                               DataCell(
                                 Text(
-                                  reader.hangGPLX!.capitalizeFirstLetterOfEachWord(),
+                                  reader.hangGPLX!
+                                      .capitalizeFirstLetterOfEachWord(),
                                   style: cellTextStyle,
                                 ),
                               ),
@@ -385,7 +394,8 @@ late final Future<void> _futureRecentReaders = _getRecentReaders();
                                 phòng trường hợp địa chỉ quá dài
                                 */
                                 ConstrainedBox(
-                                  constraints: const BoxConstraints(maxWidth: 250),
+                                  constraints:
+                                      const BoxConstraints(maxWidth: 250),
                                   child: Text(
                                     reader.ghiChu!,
                                     style: cellTextStyle,
@@ -410,7 +420,8 @@ late final Future<void> _futureRecentReaders = _getRecentReaders();
                         child: Center(
                           child: Text(
                             'Chưa có dữ liệu Khách hàng',
-                            style: TextStyle(fontSize: 16, color: Colors.black54),
+                            style:
+                                TextStyle(fontSize: 16, color: Colors.black54),
                           ),
                         ),
                       ),
