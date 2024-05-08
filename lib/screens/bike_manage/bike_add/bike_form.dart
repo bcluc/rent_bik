@@ -1,6 +1,7 @@
 // ignore_for_file: constant_identifier_names
 
 import 'package:dart_date/dart_date.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -80,7 +81,7 @@ class _BikeFormState extends State<BikeForm> {
   LoaiXe? selectedLoaiXe;
 
   bool _isProcessing = false;
-  void _saveDauSach() async {
+  void _saveXe() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isProcessing = true;
@@ -190,332 +191,330 @@ class _BikeFormState extends State<BikeForm> {
       backgroundColor: Colors.white,
       surfaceTintColor: Colors.transparent,
       insetPadding: const EdgeInsets.all(0),
-      child: Padding(
+      child: Container(
         padding: const EdgeInsets.symmetric(
           vertical: 20,
           horizontal: 30,
         ),
         child: SizedBox.expand(
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Text(
-                    widget.editXe == null ? 'THÊM XE MỚI' : 'SỬA THÔNG TIN XE',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    icon: const Icon(Icons.close_rounded),
-                  )
-                ],
-              ),
-              Form(
-                key: _formKey,
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      LabelTextFormField(
-                        controller: _bsxController,
-                        labelText: 'Biển số',
-                      ),
-                      const SizedBox(height: 10),
-                      DropdownMenu<TinhTrang>(
-                        initialSelection: TinhTrang.available,
-                        controller: _tinhTrangController,
-                        // requestFocusOnTap is enabled/disabled by platforms when it is null.
-                        // On mobile platforms, this is false by default. Setting this to true will
-                        // trigger focus request on the text field and virtual keyboard will appear
-                        // afterward. On desktop platforms however, this defaults to true.
-                        requestFocusOnTap: true,
-                        label: const Text('Tình trạng'),
-                        onSelected: (TinhTrang? tinhTrang) {
-                          setState(() {
-                            selectedTinhTrang = tinhTrang;
-                          });
-                        },
-                        dropdownMenuEntries: TinhTrang.values
-                            .map<DropdownMenuEntry<TinhTrang>>(
-                                (TinhTrang tinhTrang) {
-                          return DropdownMenuEntry<TinhTrang>(
-                            value: tinhTrang,
-                            label: tinhTrang.label,
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(height: 10),
-                      DropdownMenu<TinhTrang>(
-                        initialSelection: TinhTrang.available,
-                        controller: _tinhTrangController,
-                        requestFocusOnTap: true,
-                        label: const Text('Tình trạng'),
-                        onSelected: (TinhTrang? tinhTrang) {
-                          setState(() {
-                            selectedTinhTrang = tinhTrang;
-                          });
-                        },
-                        dropdownMenuEntries: TinhTrang.values
-                            .map<DropdownMenuEntry<TinhTrang>>(
-                                (TinhTrang tinhTrang) {
-                          return DropdownMenuEntry<TinhTrang>(
-                            value: tinhTrang,
-                            label: tinhTrang.label,
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(height: 10),
-                      LabelTextFormField(
-                        controller: _giaThueController,
-                        labelText: 'Giá thuê',
-                      ),
-                      const SizedBox(height: 10),
-                      LabelTextFormField(
-                        controller: _giaMuaController,
-                        labelText: 'Giá mua',
-                      ),
-                      const SizedBox(height: 10),
-                      DropdownMenu<LoaiXe>(
-                        initialSelection: LoaiXe.bike,
-                        controller: _loaiXeController,
-                        requestFocusOnTap: true,
-                        label: const Text('Loại xe'),
-                        onSelected: (LoaiXe? loaiXe) {
-                          setState(() {
-                            selectedLoaiXe = loaiXe;
-                          });
-                        },
-                        dropdownMenuEntries: LoaiXe.values
-                            .map<DropdownMenuEntry<LoaiXe>>((LoaiXe loaiXe) {
-                          return DropdownMenuEntry<LoaiXe>(
-                            value: loaiXe,
-                            label: loaiXe.label,
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(height: 10),
-                      DropdownMenu<GPLX>(
-                        initialSelection: GPLX.none,
-                        controller: _hangGPLXController,
-                        requestFocusOnTap: true,
-                        label: const Text('GPLX'),
-                        onSelected: (GPLX? gplx) {
-                          setState(() {
-                            selectedGPLX = gplx;
-                          });
-                        },
-                        dropdownMenuEntries: GPLX.values
-                            .map<DropdownMenuEntry<GPLX>>((GPLX gplx) {
-                          return DropdownMenuEntry<GPLX>(
-                            value: gplx,
-                            label: gplx.label,
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(height: 10),
-                      LabelTextFieldDatePicker(
-                        labelText: 'Ngày mua',
-                        controller: _dateBuyController,
-                        initialDateInPicker: widget.editXe != null
-                            ? widget.editXe!.ngayMua
-                            : DateTime.now().subYears(18),
-                        lastDate: DateTime.now(),
-                      ),
-                      const SizedBox(height: 10),
-                      LabelTextFormField(
-                        controller: _bhxController,
-                        labelText: 'Mã bảo hiểm xe',
-                      ),
-                      const SizedBox(height: 10),
-                      LabelTextFormField(
-                        controller: _soHanhTrinhController,
-                        labelText: 'Số hành trình',
-                      ),
-                    ],
-                  ),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 2, 0, 20),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery.of(context).size.height,
                 ),
-              ),
-              const Gap(12),
-              Expanded(
-                child: SingleChildScrollView(
+                child: IntrinsicHeight(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text(
-                        'Dòng xe',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                      Row(
+                        children: [
+                          Text(
+                            widget.editXe == null
+                                ? 'THÊM XE MỚI'
+                                : 'SỬA THÔNG TIN XE',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const Spacer(),
+                          IconButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            icon: const Icon(Icons.close_rounded),
+                          )
+                        ],
                       ),
-                      const SizedBox(height: 4),
-                      BlocBuilder<SelectedDongXeCubit, List<DongXe>>(
-                        builder: (ctx, dongXes) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: List.generate(
-                              dongXes.length,
-                              (index) {
-                                bool isDongXeHover = false;
-                                return StatefulBuilder(
-                                  builder: (ctx, setStateDongXeItem) {
-                                    return MouseRegion(
-                                      onEnter: (_) => setStateDongXeItem(
-                                        () => isDongXeHover = true,
-                                      ),
-                                      onHover: (_) {
-                                        if (isDongXeHover == false) {
-                                          setStateDongXeItem(
-                                            () => isDongXeHover = true,
-                                          );
-                                        }
-                                      },
-                                      onExit: (_) => setStateDongXeItem(
-                                        () => isDongXeHover = false,
-                                      ),
-                                      child: Ink(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            16, 4, 24, 4),
-                                        color: isDongXeHover
-                                            ? Colors.grey.withOpacity(0.1)
-                                            : Colors.transparent,
-                                        child: Row(
-                                          children: [
-                                            const SizedBox(
-                                              height: 40,
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            LabelTextFormField(
+                              controller: _bsxController,
+                              labelText: 'Biển số',
+                            ),
+                            const SizedBox(height: 10),
+                            DropdownMenu<TinhTrang>(
+                              initialSelection: TinhTrang.available,
+                              controller: _tinhTrangController,
+                              // requestFocusOnTap is enabled/disabled by platforms when it is null.
+                              // On mobile platforms, this is false by default. Setting this to true will
+                              // trigger focus request on the text field and virtual keyboard will appear
+                              // afterward. On desktop platforms however, this defaults to true.
+                              requestFocusOnTap: true,
+                              label: const Text('Tình trạng'),
+                              onSelected: (TinhTrang? tinhTrang) {
+                                setState(() {
+                                  selectedTinhTrang = tinhTrang;
+                                });
+                              },
+                              dropdownMenuEntries: TinhTrang.values
+                                  .map<DropdownMenuEntry<TinhTrang>>(
+                                      (TinhTrang tinhTrang) {
+                                return DropdownMenuEntry<TinhTrang>(
+                                  value: tinhTrang,
+                                  label: tinhTrang.label,
+                                );
+                              }).toList(),
+                            ),
+                            const SizedBox(height: 10),
+                            LabelTextFormField(
+                              controller: _giaThueController,
+                              labelText: 'Giá thuê',
+                            ),
+                            const SizedBox(height: 10),
+                            LabelTextFormField(
+                              controller: _giaMuaController,
+                              labelText: 'Giá mua',
+                            ),
+                            const SizedBox(height: 10),
+                            DropdownMenu<LoaiXe>(
+                              initialSelection: LoaiXe.bike,
+                              controller: _loaiXeController,
+                              requestFocusOnTap: true,
+                              label: const Text('Loại xe'),
+                              onSelected: (LoaiXe? loaiXe) {
+                                setState(() {
+                                  selectedLoaiXe = loaiXe;
+                                });
+                              },
+                              dropdownMenuEntries: LoaiXe.values
+                                  .map<DropdownMenuEntry<LoaiXe>>(
+                                      (LoaiXe loaiXe) {
+                                return DropdownMenuEntry<LoaiXe>(
+                                  value: loaiXe,
+                                  label: loaiXe.label,
+                                );
+                              }).toList(),
+                            ),
+                            const SizedBox(height: 10),
+                            DropdownMenu<GPLX>(
+                              initialSelection: GPLX.none,
+                              controller: _hangGPLXController,
+                              requestFocusOnTap: true,
+                              label: const Text('GPLX'),
+                              onSelected: (GPLX? gplx) {
+                                setState(() {
+                                  selectedGPLX = gplx;
+                                });
+                              },
+                              dropdownMenuEntries: GPLX.values
+                                  .map<DropdownMenuEntry<GPLX>>((GPLX gplx) {
+                                return DropdownMenuEntry<GPLX>(
+                                  value: gplx,
+                                  label: gplx.label,
+                                );
+                              }).toList(),
+                            ),
+                            const SizedBox(height: 10),
+                            LabelTextFieldDatePicker(
+                              labelText: 'Ngày mua',
+                              controller: _dateBuyController,
+                              initialDateInPicker: widget.editXe != null
+                                  ? widget.editXe!.ngayMua
+                                  : DateTime.now().subYears(18),
+                              lastDate: DateTime.now(),
+                            ),
+                            const SizedBox(height: 10),
+                            LabelTextFormField(
+                              controller: _bhxController,
+                              labelText: 'Mã bảo hiểm xe',
+                            ),
+                            const SizedBox(height: 10),
+                            LabelTextFormField(
+                              controller: _soHanhTrinhController,
+                              labelText: 'Số hành trình',
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Gap(12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const Text(
+                              'Dòng xe',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 4),
+                            BlocBuilder<SelectedDongXeCubit, List<DongXe>>(
+                              builder: (ctx, dongXes) {
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: List.generate(
+                                    dongXes.length,
+                                    (index) {
+                                      bool isDongXeHover = false;
+                                      return StatefulBuilder(
+                                        builder: (ctx, setStateDongXeItem) {
+                                          return MouseRegion(
+                                            onEnter: (_) => setStateDongXeItem(
+                                              () => isDongXeHover = true,
                                             ),
-                                            Expanded(
-                                              child: Text(dongXes[index]
-                                                  .tenDongXe
-                                                  .capitalizeFirstLetterOfEachWord()),
+                                            onHover: (_) {
+                                              if (isDongXeHover == false) {
+                                                setStateDongXeItem(
+                                                  () => isDongXeHover = true,
+                                                );
+                                              }
+                                            },
+                                            onExit: (_) => setStateDongXeItem(
+                                              () => isDongXeHover = false,
                                             ),
-                                            const Gap(12),
-                                            if (isDongXeHover)
-                                              IconButton(
-                                                onPressed: () {
-                                                  context
-                                                      .read<
-                                                          SelectedDongXeCubit>()
-                                                      .remove(dongXes[index]);
-                                                },
-                                                icon: const Icon(
-                                                    Icons.horizontal_rule),
+                                            child: Ink(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      16, 4, 24, 4),
+                                              color: isDongXeHover
+                                                  ? Colors.grey.withOpacity(0.1)
+                                                  : Colors.transparent,
+                                              child: Row(
+                                                children: [
+                                                  const SizedBox(
+                                                    height: 40,
+                                                  ),
+                                                  Expanded(
+                                                    child: Text(dongXes[index]
+                                                        .tenDongXe
+                                                        .capitalizeFirstLetterOfEachWord()),
+                                                  ),
+                                                  const Gap(12),
+                                                  if (isDongXeHover)
+                                                    IconButton(
+                                                      onPressed: () {
+                                                        context
+                                                            .read<
+                                                                SelectedDongXeCubit>()
+                                                            .remove(
+                                                                dongXes[index]);
+                                                      },
+                                                      icon: const Icon(Icons
+                                                          .horizontal_rule),
+                                                    ),
+                                                ],
                                               ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
                                 );
                               },
                             ),
-                          );
-                        },
-                      ),
-                      const Gap(12),
-                      const Text(
-                        'Hãng xe',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 4),
-                      BlocBuilder<SelectedHangXeCubit, List<HangXe>>(
-                          builder: (ctx, hangXes) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: List.generate(
-                            hangXes.length,
-                            // (index) => Text(theLoais[index].tenTheLoai.capitalizeFirstLetter()),
-                            (index) {
-                              bool isHangXeHover = false;
-                              return StatefulBuilder(
-                                builder: (ctx, setStateHangXeItem) {
-                                  return MouseRegion(
-                                    onEnter: (_) => setStateHangXeItem(
-                                      () => isHangXeHover = true,
-                                    ),
-                                    onHover: (_) {
-                                      if (isHangXeHover == false) {
-                                        setStateHangXeItem(
-                                          () => isHangXeHover = true,
-                                        );
-                                      }
-                                    },
-                                    onExit: (_) => setStateHangXeItem(
-                                      () => isHangXeHover = false,
-                                    ),
-                                    child: Ink(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          16, 4, 24, 4),
-                                      color: isHangXeHover
-                                          ? Colors.grey.withOpacity(0.1)
-                                          : Colors.transparent,
-                                      child: Row(
-                                        children: [
-                                          const SizedBox(
-                                            height: 40,
+                            const Gap(12),
+                            const Text(
+                              'Hãng xe',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 4),
+                            BlocBuilder<SelectedHangXeCubit, List<HangXe>>(
+                                builder: (ctx, hangXes) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: List.generate(
+                                  hangXes.length,
+                                  // (index) => Text(theLoais[index].tenTheLoai.capitalizeFirstLetter()),
+                                  (index) {
+                                    bool isHangXeHover = false;
+                                    return StatefulBuilder(
+                                      builder: (ctx, setStateHangXeItem) {
+                                        return MouseRegion(
+                                          onEnter: (_) => setStateHangXeItem(
+                                            () => isHangXeHover = true,
                                           ),
-                                          Expanded(
-                                            child: Text(hangXes[index]
-                                                .tenHangXe
-                                                .capitalizeFirstLetter()),
+                                          onHover: (_) {
+                                            if (isHangXeHover == false) {
+                                              setStateHangXeItem(
+                                                () => isHangXeHover = true,
+                                              );
+                                            }
+                                          },
+                                          onExit: (_) => setStateHangXeItem(
+                                            () => isHangXeHover = false,
                                           ),
-                                          const Gap(12),
-                                          if (isHangXeHover)
-                                            IconButton(
-                                              onPressed: () {
-                                                context
-                                                    .read<SelectedHangXeCubit>()
-                                                    .remove(hangXes[index]);
-                                              },
-                                              icon: const Icon(
-                                                  Icons.horizontal_rule),
+                                          child: Ink(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                16, 4, 24, 4),
+                                            color: isHangXeHover
+                                                ? Colors.grey.withOpacity(0.1)
+                                                : Colors.transparent,
+                                            child: Row(
+                                              children: [
+                                                const SizedBox(
+                                                  height: 40,
+                                                ),
+                                                Expanded(
+                                                  child: Text(hangXes[index]
+                                                      .tenHangXe
+                                                      .capitalizeFirstLetter()),
+                                                ),
+                                                const Gap(12),
+                                                if (isHangXeHover)
+                                                  IconButton(
+                                                    onPressed: () {
+                                                      context
+                                                          .read<
+                                                              SelectedHangXeCubit>()
+                                                          .remove(
+                                                              hangXes[index]);
+                                                    },
+                                                    icon: const Icon(
+                                                        Icons.horizontal_rule),
+                                                  ),
+                                              ],
                                             ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                },
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
                               );
-                            },
-                          ),
-                        );
-                      }),
+                            }),
+                          ],
+                        ),
+                      ),
+                      _isProcessing
+                          ? const SizedBox(
+                              height: 44,
+                              width: 44,
+                              child: Padding(
+                                padding: EdgeInsets.all(12),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                ),
+                              ),
+                            )
+                          : FilledButton(
+                              onPressed: _saveXe,
+                              style: FilledButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 20,
+                                  horizontal: 30,
+                                ),
+                              ),
+                              child: const Text(
+                                'Lưu',
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                      const SizedBox(
+                        height: 40,
+                      ),
                     ],
                   ),
                 ),
               ),
-              _isProcessing
-                  ? const SizedBox(
-                      height: 44,
-                      width: 44,
-                      child: Padding(
-                        padding: EdgeInsets.all(12),
-                        child: CircularProgressIndicator(
-                          strokeWidth: 3,
-                        ),
-                      ),
-                    )
-                  : FilledButton(
-                      onPressed: _saveDauSach,
-                      style: FilledButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 20,
-                          horizontal: 30,
-                        ),
-                      ),
-                      child: const Text(
-                        'Lưu',
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-            ],
+            ),
           ),
         ),
       ),

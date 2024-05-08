@@ -358,6 +358,12 @@ class _CustomerManageState extends State<CustomerManage> {
                                 ),
                               ),
                               DataCell(
+                                Text(
+                                  reader.cccd.toString(),
+                                  style: cellTextStyle,
+                                ),
+                              ),
+                              DataCell(
                                 /* Ràng buộc cho Chiều rộng Tối đa của cột Họ Tên = 150 */
                                 ConstrainedBox(
                                   constraints:

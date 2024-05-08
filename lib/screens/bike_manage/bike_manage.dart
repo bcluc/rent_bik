@@ -14,7 +14,7 @@ class _BikeManageState extends State<BikeManage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    tabController = TabController(length: 6, vsync: this, initialIndex: 0);
+    tabController = TabController(length: 3, vsync: this, initialIndex: 0);
   }
 
   @override

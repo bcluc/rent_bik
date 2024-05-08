@@ -22,7 +22,7 @@ void main() async {
     appWindow.minSize = initialSize;
     appWindow.size = initialSize;
     appWindow.alignment = Alignment.center;
-    appWindow.title = "Quản lý thư viện";
+    appWindow.title = "Quản lý cửa hàng xe";
     appWindow.show();
   });
 }
@@ -32,13 +32,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Bike Rental',
       theme: ThemeData(
-         colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 53, 63, 103),
-         primary: const Color.fromARGB(255, 53, 63, 103),
-         secondary: const Color.fromARGB(255, 74, 53, 103),
-         tertiary: const Color.fromARGB(255, 244, 235, 217)
-         ),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 53, 63, 103),
+            primary: const Color.fromARGB(255, 53, 63, 103),
+            secondary: const Color.fromARGB(255, 74, 53, 103),
+            tertiary: const Color.fromARGB(255, 244, 235, 217)),
         useMaterial3: true,
         textTheme: GoogleFonts.nunitoTextTheme(),
       ),

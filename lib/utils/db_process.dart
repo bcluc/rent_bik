@@ -48,7 +48,7 @@ class DbProcess {
 
           CREATE TABLE DongXe_Xe(
             MaDongXe INTEGER,
-            MaXe INTEGER
+            MaXe INTEGER,
             PRIMARY KEY (MaDongXe, MaXe),
 
             FOREIGN KEY (MaDongXe) REFERENCES DongXe(MaDongXe) ON DELETE CASCADE,
@@ -62,7 +62,7 @@ class DbProcess {
 
           CREATE TABLE HangXe_Xe(
             MaHangXe INTEGER,
-            MaXe INTEGER
+            MaXe INTEGER,
             PRIMARY KEY (MaHangXe, MaXe),
 
             FOREIGN KEY (MaHangXe) REFERENCES HangXe(MaHangXe) ON DELETE CASCADE,
@@ -78,8 +78,8 @@ class DbProcess {
           );
 
           CREATE TABLE BaoHiemXe_Xe(
-            MaxBHX INTEGER,
-            MaXe INTEGER
+            MaBHX INTEGER,
+            MaXe INTEGER,
             PRIMARY KEY (MaBHX, MaXe),
 
             FOREIGN KEY (MaBHX) REFERENCES BaoHiemXe(MaBHX) ON DELETE CASCADE,
