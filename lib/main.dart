@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
             secondary: const Color.fromARGB(255, 74, 53, 103),
             tertiary: const Color.fromARGB(255, 244, 235, 217)),
         useMaterial3: true,
-        textTheme: GoogleFonts.nunitoTextTheme(),
+        //textTheme: GoogleFonts.nunitoTextTheme(),
       ),
       home: const LoginLayout(),
       localizationsDelegates: const [

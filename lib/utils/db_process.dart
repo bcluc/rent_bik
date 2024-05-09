@@ -345,7 +345,7 @@ class DbProcess {
         'GiaMua': newXeDto.giaMua,
         'LoaiXe': newXeDto.loaiXe,
         'HangGPLX': newXeDto.hangGPLX,
-        'NgayMua': newXeDto.ngayMua,
+        'NgayMua': newXeDto.ngayMua.toVnFormat(),
         'SoHanhTrinh': newXeDto.soHanhTrinh,
       },
     );

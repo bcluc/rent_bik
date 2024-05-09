@@ -108,9 +108,7 @@ class _BikeFormState extends State<BikeForm> {
         );
 
         int returningId = await dbProcess.insertXeDto(newXeDto);
-        if (returningId != null) {
-          newXeDto.maXe = returningId;
-        }
+        newXeDto.maXe = returningId;
 
         if (mounted) {
           Navigator.of(context).pop(newXeDto);
@@ -146,7 +144,7 @@ class _BikeFormState extends State<BikeForm> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(widget.editXe == null
-                ? 'Tạo Đầu sách thành công.'
+                ? 'Tạo thông tin xe thành công.'
                 : 'Cập nhật thông tin thành công'),
             behavior: SnackBarBehavior.floating,
             duration: const Duration(seconds: 3),
@@ -323,6 +321,7 @@ class _BikeFormState extends State<BikeForm> {
                             ),
                             const SizedBox(height: 10),
                             LabelTextFormField(
+                              isEnable: widget.editXe == null,
                               controller: _bhxController,
                               labelText: 'Mã bảo hiểm xe',
                             ),
