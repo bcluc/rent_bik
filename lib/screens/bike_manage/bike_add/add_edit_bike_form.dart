@@ -36,12 +36,14 @@ class _AddEditBikeFormState extends State<AddEditBikeForm> {
           BlocProvider(
             create: (_) => widget.editXe == null
                 ? SelectedDongXeCubit()
-                : SelectedDongXeCubit.of(widget.editXe!.dongXe as List<DongXe>),
+                : SelectedDongXeCubit.of(
+                    widget.editXe!.dongXes as List<DongXe>),
           ),
           BlocProvider(
             create: (_) => widget.editXe == null
                 ? SelectedHangXeCubit()
-                : SelectedHangXeCubit.of(widget.editXe!.hangXe as List<HangXe>),
+                : SelectedHangXeCubit.of(
+                    widget.editXe!.hangXes as List<HangXe>),
           ),
         ],
         child: Row(

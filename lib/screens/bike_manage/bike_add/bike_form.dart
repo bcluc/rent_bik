@@ -67,7 +67,6 @@ enum TinhTrang {
 class _BikeFormState extends State<BikeForm> {
   final _formKey = GlobalKey<FormState>();
   final _dateBuyController = TextEditingController();
-  final _bhxController = TextEditingController();
   final _bsxController = TextEditingController();
   final _tinhTrangController = TextEditingController();
   final _loaiXeController = TextEditingController();
@@ -99,11 +98,10 @@ class _BikeFormState extends State<BikeForm> {
           _loaiXeController.text,
           _hangGPLXController.text,
           // ignore: use_build_context_synchronously
-          context.read<SelectedDongXeCubit>().state.last,
+          context.read<SelectedDongXeCubit>().state,
           // ignore: use_build_context_synchronously
-          context.read<SelectedHangXeCubit>().state.last,
+          context.read<SelectedHangXeCubit>().state,
           vnDateFormat.parse(_dateBuyController.text),
-          int.parse(_bhxController.text),
           int.parse(_soHanhTrinhController.text),
         );
 
@@ -121,13 +119,12 @@ class _BikeFormState extends State<BikeForm> {
         widget.editXe!.loaiXe = _loaiXeController.text;
         widget.editXe!.hangGPLX = _hangGPLXController.text;
         widget.editXe!.ngayMua = vnDateFormat.parse(_dateBuyController.text);
-        widget.editXe!.maBHX = int.parse(_bhxController.text);
         widget.editXe!.soHanhTrinh = int.parse(_soHanhTrinhController.text);
 
         // ignore: use_build_context_synchronously
-        widget.editXe!.dongXe = context.read<SelectedDongXeCubit>().state.last;
+        widget.editXe!.dongXes = context.read<SelectedDongXeCubit>().state;
         // ignore: use_build_context_synchronously
-        widget.editXe!.hangXe = context.read<SelectedHangXeCubit>().state.last;
+        widget.editXe!.hangXes = context.read<SelectedHangXeCubit>().state;
 
         await dbProcess.updateXeDto(widget.editXe!);
 
@@ -160,7 +157,6 @@ class _BikeFormState extends State<BikeForm> {
     super.initState();
     if (widget.editXe != null) {
       _dateBuyController.text = widget.editXe!.ngayMua.toVnFormat();
-      _bhxController.text = widget.editXe!.maBHX.toString();
       _bsxController.text = widget.editXe!.bienSoXe;
       _tinhTrangController.text = widget.editXe!.tinhTrang;
       _loaiXeController.text = widget.editXe!.loaiXe;
@@ -174,7 +170,6 @@ class _BikeFormState extends State<BikeForm> {
   @override
   void dispose() {
     _dateBuyController.dispose();
-    _bhxController.dispose();
     _bsxController.dispose();
     _tinhTrangController.dispose();
     _loaiXeController.dispose();
@@ -318,12 +313,6 @@ class _BikeFormState extends State<BikeForm> {
                                   ? widget.editXe!.ngayMua
                                   : DateTime.now(),
                               lastDate: DateTime.now(),
-                            ),
-                            const SizedBox(height: 10),
-                            LabelTextFormField(
-                              isEnable: widget.editXe == null,
-                              controller: _bhxController,
-                              labelText: 'Mã bảo hiểm xe',
                             ),
                             const SizedBox(height: 10),
                             LabelTextFormField(

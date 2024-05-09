@@ -57,6 +57,7 @@ dependencies:
   pie_chart: ^5.4.0
   flutter_localizations:
     sdk: flutter
+  equatable: ^2.0.5
 
 dev_dependencies:
   flutter_test:

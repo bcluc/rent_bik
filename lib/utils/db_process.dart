@@ -17,6 +17,7 @@ class DbProcess {
 
   Future<void> connect() async {
     final currentFolder = Directory.current.path;
+    await deleteDatabase('$currentFolder/database/rent_bik.db');
     _database = await openDatabase(
       '$currentFolder/database/rent_bik.db',
       version: 1,
@@ -279,10 +280,9 @@ class DbProcess {
         element['GiaMua'],
         element['LoaiXe'],
         element['HangGPLX'],
-        null,
-        null,
+        [],
+        [],
         element['NgayMua'],
-        null,
         element['SoHanhTrinh'],
       );
 
@@ -295,10 +295,10 @@ class DbProcess {
       );
 
       while (await cur.moveNext()) {
-        xe.dongXe = DongXe(
+        xe.dongXes.add(DongXe(
           cur.current['MaDongXe'] as int,
           cur.current['TenDongXe'] as String,
-        );
+        ));
       }
 
       cur = await _database.rawQueryCursor(
@@ -310,27 +310,17 @@ class DbProcess {
       );
 
       while (await cur.moveNext()) {
-        xe.hangXe = HangXe(
+        xe.hangXes.add(HangXe(
           cur.current['MaHangXe'] as int,
           cur.current['TenHangXe'] as String,
-        );
+        ));
       }
-      // BHX
-      cur = await _database.rawQueryCursor(
-        '''
-        select MaBHX from BaoHiemXe_Xe join BaoHiemXe USING(MaBHX)
-        where MaXe = ?
-        ''',
-        [xe.maXe],
-      );
-
-      while (await cur.moveNext()) {
-        xe.maBHX = cur.current['MaBHX'] as int;
-      }
-
       xes.add(xe);
     }
-
+    for (XeDTO xe in xes) {
+      print(xe.maXe);
+      print(xe.bienSoXe);
+    }
     return xes;
   }
 
@@ -351,22 +341,26 @@ class DbProcess {
     );
 
     // Insert DongXe_Xe
-    await _database.insert(
-      'DongXe_Xe',
-      {
-        'MaDongXe': newXeDto.dongXe!.maDongXe,
-        'MaXe': returningId,
-      },
-    );
+    for (var dongXe in newXeDto.dongXes) {
+      await _database.insert(
+        'DongXe_Xe',
+        {
+          'MaDongXe': dongXe.maDongXe,
+          'MaXe': returningId,
+        },
+      );
+    }
 
     // Insert HangXe_Xe
-    await _database.insert(
-      'HangXe_Xe',
-      {
-        'MaHangXe': newXeDto.hangXe!.maHangXe,
-        'MaXe': returningId,
-      },
-    );
+    for (var hangXe in newXeDto.hangXes) {
+      await _database.insert(
+        'HangXe_Xe',
+        {
+          'MaHangXe': hangXe.maHangXe,
+          'MaXe': returningId,
+        },
+      );
+    }
 
     return returningId;
   }
@@ -400,7 +394,7 @@ class DbProcess {
       HangGPLX = ?,
       NgayMua = ?,
       SoHanhTrinh = ?
-      where MaDauSach = ?
+      where MaXe = ?
       ''',
       [
         updatedXeDto.bienSoXe,
@@ -409,7 +403,7 @@ class DbProcess {
         updatedXeDto.giaMua,
         updatedXeDto.loaiXe,
         updatedXeDto.hangGPLX,
-        updatedXeDto.ngayMua,
+        updatedXeDto.ngayMua.toVnFormat(),
         updatedXeDto.soHanhTrinh,
         updatedXeDto.maXe,
       ],
@@ -418,14 +412,14 @@ class DbProcess {
     await _database.insert(
       'HangXe_Xe',
       {
-        'MaHangXe': updatedXeDto.hangXe!.maHangXe,
+        'MaHangXe': updatedXeDto.hangXes!.last.maHangXe,
         'MaXe': updatedXeDto.maXe,
       },
     );
     await _database.insert(
       'DongXe_Xe',
       {
-        'MaDongXe': updatedXeDto.dongXe!.maDongXe,
+        'MaDongXe': updatedXeDto.dongXes!.last.maDongXe,
         'MaXe': updatedXeDto.maXe,
       },
     );

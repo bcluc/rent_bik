@@ -10,11 +10,10 @@ class XeDTO {
   int giaThue;
   int giaMua;
   String loaiXe;
-  String? hangGPLX;
-  DongXe? dongXe;
-  HangXe? hangXe;
+  String hangGPLX;
+  List<DongXe> dongXes;
+  List<HangXe> hangXes;
   DateTime ngayMua;
-  int? maBHX;
   int soHanhTrinh;
 
   XeDTO(
@@ -25,24 +24,26 @@ class XeDTO {
     this.giaMua,
     this.loaiXe,
     this.hangGPLX,
-    this.dongXe,
-    this.hangXe,
+    this.dongXes,
+    this.hangXes,
     this.ngayMua,
-    this.maBHX,
     this.soHanhTrinh,
   );
 
   String dongXeToString() {
     String str = "";
-    str += '${dongXe!.tenDongXe.capitalizeFirstLetterOfEachWord()}, ';
+    for (var dongXe in dongXes) {
+      str += '${dongXe.tenDongXe.capitalizeFirstLetterOfEachWord()}, ';
+    }
 
     return str.substring(0, str.length - 2);
   }
 
   String hangXeToString() {
     String str = "";
-    str += '${hangXe!.tenHangXe.capitalizeFirstLetterOfEachWord()}, ';
-
+    for (var hangXe in hangXes) {
+      str += '${hangXe.tenHangXe.capitalizeFirstLetterOfEachWord()}, ';
+    }
     return str.substring(0, str.length - 2);
   }
 }

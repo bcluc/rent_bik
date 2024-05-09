@@ -16,7 +16,7 @@ class BikeWarehouse extends StatefulWidget {
 }
 
 class _BikeWarehouseState extends State<BikeWarehouse> {
-  late final List<XeDTO> _xes;
+  late List<XeDTO> _xes;
   late List<XeDTO> _filteredXes;
 
   int _selectedRow = -1;
