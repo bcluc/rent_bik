@@ -108,7 +108,9 @@ class _BikeFormState extends State<BikeForm> {
         );
 
         int returningId = await dbProcess.insertXeDto(newXeDto);
-        newXeDto.maXe = returningId;
+        if (returningId != null) {
+          newXeDto.maXe = returningId;
+        }
 
         if (mounted) {
           Navigator.of(context).pop(newXeDto);
@@ -316,7 +318,7 @@ class _BikeFormState extends State<BikeForm> {
                               controller: _dateBuyController,
                               initialDateInPicker: widget.editXe != null
                                   ? widget.editXe!.ngayMua
-                                  : DateTime.now().subYears(18),
+                                  : DateTime.now(),
                               lastDate: DateTime.now(),
                             ),
                             const SizedBox(height: 10),

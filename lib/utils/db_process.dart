@@ -38,7 +38,11 @@ class DbProcess {
             BienSoXe TEXT,
             TinhTrang TEXT,
             GiaThue INTEGER,
-            HangGPLX TEXT
+            HangGPLX TEXT,
+            LoaiXe TEXT,
+            GiaMua INTEGER,
+            NgayMua TEXT,
+            SoHanhTrinh INTEGER
           );
 
           CREATE TABLE DongXe(

@@ -36,3 +36,26 @@ VALUES
         'A1, B2',
         ''
     );
+
+INSERT INTO
+    Xe (
+        BienSoXe,
+        TinhTrang,
+        GiaThue,
+        GiaMua,
+        LoaiXe,
+        HangGPLX,
+        NgayMua,
+        SoHanhTrinh
+    )
+VALUES
+    (
+        '12',
+        'Có sẵn',
+        '1',
+        '1',
+        'Xe máy',
+        'A1',
+        '09/05/2024',
+        '1'
+    )
