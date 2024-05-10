@@ -17,7 +17,7 @@ class DbProcess {
 
   Future<void> connect() async {
     final currentFolder = Directory.current.path;
-    await deleteDatabase('$currentFolder/database/rent_bik.db');
+    //await deleteDatabase('$currentFolder/database/rent_bik.db');
     _database = await openDatabase(
       '$currentFolder/database/rent_bik.db',
       version: 1,

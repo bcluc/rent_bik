@@ -31,6 +31,10 @@ class _BikeWarehouseState extends State<BikeWarehouse> {
     */
     await Future.delayed(kTabScrollDuration);
     _xes = await dbProcess.queryXeDto();
+    // for (XeDTO xeDTO in _xes) {
+    //   print("SHOQQ");
+    //   print(xeDTO.bienSoXe);
+    // }
   }
 
   @override

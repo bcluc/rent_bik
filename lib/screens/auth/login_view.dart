@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rent_bik/components/password_text_field.dart';
-import 'package:rent_bik/main.dart';
 import 'package:rent_bik/models/tai_khoan.dart';
 import 'package:rent_bik/screens/bike_rental_management.dart';
 import 'package:rent_bik/utils/common_variables.dart';
@@ -12,7 +11,7 @@ class LoginView extends StatefulWidget {
 
   @override
   State<LoginView> createState() => _LoginViewState();
-  
+
   validateCredentials(String s, String t) {}
 }
 
@@ -22,7 +21,7 @@ class _LoginViewState extends State<LoginView> {
 
   bool _isProcessing = false;
 
-  TaiKhoan accountToLogin = TaiKhoan("admin","admin");
+  TaiKhoan accountToLogin = TaiKhoan("admin", "admin");
 
   String _errorText = '';
 
@@ -49,8 +48,8 @@ class _LoginViewState extends State<LoginView> {
       _isProcessing = true;
     });
 
-
-    if (enteredUsername == accountToLogin.userName && enteredPassword == accountToLogin.passWord) {
+    if (enteredUsername == accountToLogin.userName &&
+        enteredPassword == accountToLogin.passWord) {
       await Future.delayed(
         const Duration(milliseconds: 400),
       );
@@ -179,7 +178,8 @@ class _LoginViewState extends State<LoginView> {
             : OutlinedButton(
                 onPressed: _submit,
                 style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
                   foregroundColor: Colors.black,
                 ),
                 child: const Row(
