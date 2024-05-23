@@ -15,11 +15,12 @@ class BikeRentalManagement extends StatefulWidget {
   State<BikeRentalManagement> createState() => _BikeRentalManagementState();
 }
 
-class _BikeRentalManagementState extends State<BikeRentalManagement> with TickerProviderStateMixin{
+class _BikeRentalManagementState extends State<BikeRentalManagement>
+    with TickerProviderStateMixin {
   late final TabController _tabController;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     _tabController = TabController(length: 5, vsync: this, initialIndex: 0);
   }
@@ -42,18 +43,18 @@ class _BikeRentalManagementState extends State<BikeRentalManagement> with Ticker
             color: Theme.of(context).colorScheme.background,
             child: Column(
               children: [
-                // WindowTitleBarBox(
-                //   child: Row(
-                //     children: [
-                //       Expanded(
-                //         child: MoveWindow(),
-                //       ),
-                //       MinimizeWindowButton(colors: windowButtonColors),
-                //       MaximizeWindowButton(colors: windowButtonColors),
-                //       CloseWindowButton(),
-                //     ],
-                //   ),
-                // ),
+                WindowTitleBarBox(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: MoveWindow(),
+                      ),
+                      MinimizeWindowButton(colors: windowButtonColors),
+                      MaximizeWindowButton(colors: windowButtonColors),
+                      CloseWindowButton(),
+                    ],
+                  ),
+                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6.0),
                   child: Row(
@@ -63,8 +64,6 @@ class _BikeRentalManagementState extends State<BikeRentalManagement> with Ticker
                         'assets/logo/imgLogo.svg',
                         width: 200,
                       ),
-                  
-                  
                       const Gap(80),
                       Expanded(
                         child: TabBar(
@@ -103,12 +102,19 @@ class _BikeRentalManagementState extends State<BikeRentalManagement> with Ticker
                           splashBorderRadius: BorderRadius.circular(8),
                           indicatorSize: TabBarIndicatorSize.tab,
                           dividerColor: Colors.transparent,
-                          overlayColor: MaterialStateProperty.resolveWith((states) {
+                          overlayColor:
+                              MaterialStateProperty.resolveWith((states) {
                             if (states.contains(MaterialState.hovered)) {
-                              return Theme.of(context).colorScheme.primary.withOpacity(0.2);
+                              return Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withOpacity(0.2);
                             }
                             if (states.contains(MaterialState.pressed)) {
-                              return Theme.of(context).colorScheme.primary.withOpacity(0.2);
+                              return Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withOpacity(0.2);
                             }
                             return Colors.transparent;
                           }),
@@ -141,7 +147,6 @@ class _BikeRentalManagementState extends State<BikeRentalManagement> with Ticker
                             ),
                           ),
                           const PopupMenuDivider(),
-                  
                           PopupMenuItem(
                             onTap: () {
                               showDialog(

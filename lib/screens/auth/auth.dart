@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rent_bik/components/password_text_field.dart';
+import 'package:rent_bik/main.dart';
+import 'package:rent_bik/models/khach_hang.dart';
 import 'package:rent_bik/screens/auth/login_view.dart';
 import 'package:rent_bik/screens/bike_rental_management.dart';
 import 'package:rent_bik/screens/customer_manage/add_edit_customer_form.dart';
@@ -78,6 +80,20 @@ class _LoginLayoutState extends State<LoginLayout> {
       setState(() {
         _isProcessing = false;
       });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    //fetchData();
+  }
+
+  void fetchData() async {
+    List<KhachHang> _readerRows =
+        await dbProcess.queryKhachHang(numberRowIgnore: 1);
+    for (KhachHang reader in _readerRows) {
+      print(reader.cccd);
     }
   }
 

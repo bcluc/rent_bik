@@ -41,7 +41,7 @@ class _CustomerManageState extends State<CustomerManage> {
     Tạo chuyển động mượt mà 
     */
     await Future.delayed(kTabScrollDuration);
-    _readerRows = await dbProcess.queryKhachHang(numberRowIgnore: 0);
+    _readerRows = await dbProcess.queryKhachHang(numberRowIgnore: 1);
     _readerCount = await dbProcess.queryCountKhachHang();
   }
 
@@ -403,7 +403,7 @@ class _CustomerManageState extends State<CustomerManage> {
                                   constraints:
                                       const BoxConstraints(maxWidth: 250),
                                   child: Text(
-                                    reader.ghiChu!,
+                                    reader.ghiChu == null ? '' : reader.ghiChu!,
                                     style: cellTextStyle,
                                   ),
                                 ),

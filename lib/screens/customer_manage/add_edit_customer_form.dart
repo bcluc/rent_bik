@@ -42,13 +42,13 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
 
       if (widget.editKhachHang == null) {
         KhachHang newKhachHang = KhachHang(
-          null,
-          _identityController.text,
-          _fullnameController.text.toLowerCase(),
-          vnDateFormat.parse(_dobController.text),
-          _phoneController.text,
-          _lincenseController.text.toLowerCase(),
-          _noteController.text,
+          maKhachHang: null,
+          cccd: _identityController.text,
+          hoTen: _fullnameController.text.toLowerCase(),
+          ngaySinh: vnDateFormat.parse(_dobController.text),
+          soDienThoai: _phoneController.text,
+          hangGPLX: _lincenseController.text.toLowerCase(),
+          ghiChu: _noteController.text,
         );
 
         int returningId = await dbProcess.insertKhachHang(newKhachHang);

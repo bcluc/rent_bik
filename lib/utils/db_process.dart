@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:rent_bik/dto/dong_xe_dto.dart';
@@ -11,96 +12,11 @@ import 'package:rent_bik/utils/common_variables.dart';
 import 'package:rent_bik/utils/extesion.dart';
 import 'package:sqflite/utils/utils.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:http/http.dart' as http;
 
 class DbProcess {
   late Database _database;
-
-  Future<void> connect() async {
-    final currentFolder = Directory.current.path;
-    //await deleteDatabase('$currentFolder/database/rent_bik.db');
-    _database = await openDatabase(
-      '$currentFolder/database/rent_bik.db',
-      version: 1,
-      onCreate: (db, version) async {
-        await db.execute(
-          '''
-          CREATE TABLE KhachHang(
-            MaKhachHang INTEGER PRIMARY KEY AUTOINCREMENT,
-            CCCD TEXT,
-            HoTen TEXT,
-            NgaySinh TEXT,
-            SoDienThoai TEXT,
-            HangGPLX TEXT,
-            GhiChu TEXT
-          );
-          
-          CREATE TABLE Xe(
-            MaXe INTEGER PRIMARY KEY AUTOINCREMENT,
-            BienSoXe TEXT,
-            TinhTrang TEXT,
-            GiaThue INTEGER,
-            HangGPLX TEXT,
-            LoaiXe TEXT,
-            GiaMua INTEGER,
-            NgayMua TEXT,
-            SoHanhTrinh INTEGER
-          );
-
-          CREATE TABLE DongXe(
-            MaDongXe INTEGER PRIMARY KEY AUTOINCREMENT, 
-            TenDongXe TEXT
-          );
-
-          CREATE TABLE DongXe_Xe(
-            MaDongXe INTEGER,
-            MaXe INTEGER,
-            PRIMARY KEY (MaDongXe, MaXe),
-
-            FOREIGN KEY (MaDongXe) REFERENCES DongXe(MaDongXe) ON DELETE CASCADE,
-            FOREIGN KEY (MaXe) REFERENCES Xe(MaXe) ON DELETE CASCADE
-          );
-
-          CREATE TABLE HangXe(
-            MaHangXe INTEGER PRIMARY KEY AUTOINCREMENT, 
-            TenHangXe TEXT
-          );
-
-          CREATE TABLE HangXe_Xe(
-            MaHangXe INTEGER,
-            MaXe INTEGER,
-            PRIMARY KEY (MaHangXe, MaXe),
-
-            FOREIGN KEY (MaHangXe) REFERENCES HangXe(MaHangXe) ON DELETE CASCADE,
-            FOREIGN KEY (MaXe) REFERENCES Xe(MaXe) ON DELETE CASCADE
-          );
-
-          CREATE TABLE BaoHiemXe(
-            MaBHX INTEGER PRIMARY KEY AUTOINCREMENT,
-            SoBHX TEXT,
-            NgayMua TEXT,
-            NgayHetHan TEXT,
-            SoTien INTEGER
-          );
-
-          CREATE TABLE BaoHiemXe_Xe(
-            MaBHX INTEGER,
-            MaXe INTEGER,
-            PRIMARY KEY (MaBHX, MaXe),
-
-            FOREIGN KEY (MaBHX) REFERENCES BaoHiemXe(MaBHX) ON DELETE CASCADE,
-            FOREIGN KEY (MaXe) REFERENCES Xe(MaXe) ON DELETE CASCADE
-          );
-
-
-          ''',
-        );
-      },
-    );
-  }
-
-  //
-  // CODING PIN HERE
-  //
+  final String _baseUrl = "http://localhost/RentBikBE";
 
   Future<void> updateMaPin(String newMaPin) async {
     await _database.rawUpdate(
@@ -120,33 +36,24 @@ class DbProcess {
   Future<List<KhachHang>> queryKhachHang({
     required int numberRowIgnore,
   }) async {
-    /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
-    List<Map<String, dynamic>> data = await _database.rawQuery(
-      '''
-      select * from KhachHang 
-      limit ?, 8
-      ''',
-      [numberRowIgnore],
-    );
-
     List<KhachHang> danhSachKhachHang = [];
 
-    for (var element in data) {
-      danhSachKhachHang.add(
-        KhachHang(
-            element['MaKhachHang'],
-            element['CCCD'],
-            element['HoTen'],
-            vnDateFormat.parse(element['NgaySinh'] as String),
-            element['SoDienThoai'],
-            element['HangGPLX'],
-            element['GhiChu']),
-      );
-    }
+    /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
+    final response = await http.get(Uri.parse('$_baseUrl/get_Customers.php')
+        .replace(queryParameters: {'page': numberRowIgnore.toString()}));
+    if (response.statusCode == 200) {
+      //print(response.body);
 
+      List<dynamic> jsonData = json.decode(response.body)['customers'];
+      danhSachKhachHang =
+          jsonData.map((data) => KhachHang.fromJson(data)).toList();
+    } else {
+      // Handle error if needed
+    }
     return danhSachKhachHang;
   }
 
+  //TODO: Fix queryKHWithName
   Future<List<KhachHang>> queryKhachHangFullnameWithString({
     required String str,
     required int numberRowIgnore,
@@ -163,27 +70,30 @@ class DbProcess {
     List<KhachHang> danhSachKhachHang = [];
 
     for (var element in data) {
-      danhSachKhachHang.add(
-        KhachHang(
-          element['MaKhachHang'],
-          element['CCCD'],
-          element['HoTen'],
-          vnDateFormat.parse(element['NgaySinh'] as String),
-          element['SoDienThoai'],
-          element['HangGPLX'],
-          element['GhiChu'],
-        ),
-      );
+      // danhSachKhachHang.add(
+      //   KhachHang(
+      //     element['MaKhachHang'],
+      //     element['CCCD'],
+      //     element['HoTen'],
+      //     vnDateFormat.parse(element['NgaySinh'] as String),
+      //     element['SoDienThoai'],
+      //     element['HangGPLX'],
+      //     element['GhiChu'],
+      //   ),
+      // );
     }
 
     return danhSachKhachHang;
   }
 
+  //TODO: Count KH
   Future<int> queryCountKhachHang() async {
-    return firstIntValue(
-        await _database.rawQuery('select count(MaKhachHang) from KhachHang'))!;
+    return 4;
+    // return firstIntValue(
+    //     await _database.rawQuery('select count(MaKhachHang) from KhachHang'))!;
   }
 
+  //TODO: Query Count KH
   Future<int> queryCountKhachHangFullnameWithString(String str) async {
     return firstIntValue(
       await _database.rawQuery(
@@ -197,7 +107,8 @@ class DbProcess {
   }
 
   Future<int> insertKhachHang(KhachHang newKhachHang) async {
-    return await _database.insert('KhachHang', newKhachHang.toMap());
+    return 0;
+    //return await _database.insert('KhachHang', newKhachHang.toMap());
   }
 
   Future<void> updateKhachHang(KhachHang updatedKhachHang) async {
@@ -221,8 +132,18 @@ class DbProcess {
   }
 
   Future<void> deleteKhachHang(int maKhachHang) async {
-    await _database.rawDelete(
-        'delete from KhachHang where MaKhachHang  = ?', [maKhachHang]);
+    final response = await http.delete(
+      Uri.parse('$_baseUrl/delete_Customer.php'),
+      body: jsonEncode(<String, int>{
+        'MaKhachHang': maKhachHang,
+      }),
+    );
+    if (response.statusCode == 200) {
+      //print(response.body);
+    } else {
+      // Handle error if needed
+    }
+    return;
   }
 
   //
@@ -412,14 +333,14 @@ class DbProcess {
     await _database.insert(
       'HangXe_Xe',
       {
-        'MaHangXe': updatedXeDto.hangXes!.last.maHangXe,
+        'MaHangXe': updatedXeDto.hangXes.last.maHangXe,
         'MaXe': updatedXeDto.maXe,
       },
     );
     await _database.insert(
       'DongXe_Xe',
       {
-        'MaDongXe': updatedXeDto.dongXes!.last.maDongXe,
+        'MaDongXe': updatedXeDto.dongXes.last.maDongXe,
         'MaXe': updatedXeDto.maXe,
       },
     );

@@ -9,10 +9,6 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 DbProcess dbProcess = DbProcess();
 
 void main() async {
-  sqfliteFfiInit();
-  databaseFactory = databaseFactoryFfi;
-
-  await dbProcess.connect();
   runApp(
     const MyApp(),
   );
