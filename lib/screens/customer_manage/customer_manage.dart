@@ -31,57 +31,57 @@ class _CustomerManageState extends State<CustomerManage> {
   int _selectedRow = -1;
 
   /* 2 biến này không set final bởi vì nó sẽ thay đổi giá trị khi người dùng tương tác */
-  late List<KhachHang> _readerRows;
-  late int _readerCount;
+  late List<KhachHang> _KHRows;
+  late int _KHCount;
 
-  late final Future<void> _futureRecentReaders = _getRecentReaders();
-  Future<void> _getRecentReaders() async {
+  late final Future<void> _futureRecentKHs = _getRecentKHs();
+  Future<void> _getRecentKHs() async {
     /* 
     Delay 1 khoảng bằng thời gian animation của TabController 
     Tạo chuyển động mượt mà 
     */
     await Future.delayed(kTabScrollDuration);
-    _readerRows = await dbProcess.queryKhachHang(numberRowIgnore: 1);
-    _readerCount = await dbProcess.queryCountKhachHang();
+    _KHRows = await dbProcess.queryKhachHang(numberRowIgnore: 1);
+    _KHCount = await dbProcess.queryCountKhachHang();
   }
 
   final _searchController = TextEditingController();
 
   /*
   Nếu có Độc giả mới được thêm (tức là đã điền đầy đủ thông tin hợp lệ + nhấn Save)
-  thì phương thức showDialog() sẽ trả về một Reader mới
+  thì phương thức showDialog() sẽ trả về một KH mới
   */
-  Future<void> _logicAddReader() async {
-    KhachHang? newReader = await showDialog(
+  Future<void> _logicAddKH() async {
+    KhachHang? newKH = await showDialog(
       context: context,
       builder: (ctx) => const AddEditCustomerForm(),
     );
 
-    // print(newReader);
-    if (newReader != null) {
+    // print(newKH);
+    if (newKH != null) {
       // print(
-      //     "('${newReader.fullname}', '${newReader.dob.toVnFormat()}', '${newReader.address}', '${newReader.phoneNumber}', '${newReader.creationDate.toVnFormat()}', '${newReader.expirationDate.toVnFormat()}', 0),");
+      //     "('${newKH.fullname}', '${newKH.dob.toVnFormat()}', '${newKH.address}', '${newKH.phoneNumber}', '${newKH.creationDate.toVnFormat()}', '${newKH.expirationDate.toVnFormat()}', 0),");
       setState(() {
-        if (_readerRows.length < 8) {
-          _readerRows.add(newReader);
+        if (_KHRows.length < 8) {
+          _KHRows.add(newKH);
         }
-        _readerCount++;
-        // print('total page = ${_readerCount ~/ 8 + min(_readerCount % 8, 1)}');
+        _KHCount++;
+        // print('total page = ${_KHCount ~/ 8 + min(_KHCount % 8, 1)}');
       });
     }
   }
 
   /*
   Hàm này là logic xử lý khi người dùng nhấn vào nút Edit hoặc Long Press vào một Row trong bảng
-  Đầu tiên là show AddEditReaderForm, showDialog() sẽ trả về:
+  Đầu tiên là show AddEditKHForm, showDialog() sẽ trả về:
     - String 'updated', nếu người dùng nhấn Save
     - null, nếu người dùng nhấn nút Close hoặc Click Outside of Dialog
   */
-  Future<void> _logicEditReader() async {
+  Future<void> _logicEditKH() async {
     String? message = await showDialog(
       context: context,
       builder: (ctx) => AddEditCustomerForm(
-        editKhachHang: _readerRows[_selectedRow],
+        editKhachHang: _KHRows[_selectedRow],
       ),
     );
 
@@ -94,45 +94,45 @@ class _CustomerManageState extends State<CustomerManage> {
   /* 
   Hàm này là logic Xóa Độc giả 
   */
-  Future<void> _logicDeleteReader() async {
-    var deleteReaderName = _readerRows[_selectedRow].hoTen;
+  Future<void> _logicDeleteKH() async {
+    var deleteKHName = _KHRows[_selectedRow].hoTen;
 
     /* Xóa dòng dữ liệu*/
     await dbProcess.deleteKhachHang(
-      _readerRows[_selectedRow].maKhachHang!,
+      _KHRows[_selectedRow].maKhachHang!,
     );
 
     /* 
-    Lấy giá trị totalPages trước khi giảm _readerCount đi 1 đơn vị 
+    Lấy giá trị totalPages trước khi giảm _KHCount đi 1 đơn vị 
     VD: Có 17 dòng dữ liệu, phân trang 8 dòng => Đang có 3 total page 
-    Nếu giảm _readerCount đi 1 đơn vị trước khi tính totalPages
+    Nếu giảm _KHCount đi 1 đơn vị trước khi tính totalPages
     thì totalPages chỉ còn 2 => SAI 
     */
-    int totalPages = _readerCount ~/ 8 + min(_readerCount % 8, 1);
+    int totalPages = _KHCount ~/ 8 + min(_KHCount % 8, 1);
     int currentPage = int.parse(_paginationController.text);
 
-    _readerCount--;
+    _KHCount--;
 
     // print('totalPage = $totalPages');
 
     if (currentPage == totalPages) {
-      _readerRows.removeAt(_selectedRow);
+      _KHRows.removeAt(_selectedRow);
       /* 
       Trường hợp đặc biệt:
       Thủ thư đang ở trang cuối cùng và xóa nốt dòng cuối cùng 
       thì phải chuyển lại sang trang trước đó.
       VD: Xóa hết các dòng ở trang 3 thì tự động chuyển về trang 2
       */
-      if (_readerRows.isEmpty && _readerCount > 0) {
+      if (_KHRows.isEmpty && _KHCount > 0) {
         currentPage--;
         _paginationController.text = currentPage.toString();
-        _loadReadersOfPageIndex(currentPage);
+        _loadKHsOfPageIndex(currentPage);
       }
       /* 
-      Nếu không còn trang trước đó, tức _readerCount == 0, thì không cần làm gì cả 
+      Nếu không còn trang trước đó, tức _KHCount == 0, thì không cần làm gì cả 
       */
     } else {
-      _loadReadersOfPageIndex(currentPage);
+      _loadKHsOfPageIndex(currentPage);
     }
 
     setState(() {});
@@ -143,7 +143,7 @@ class _CustomerManageState extends State<CustomerManage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Đã xóa Khách Hàng $deleteReaderName.',
+            'Đã xóa Khách Hàng $deleteKHName.',
             textAlign: TextAlign.center,
           ),
           behavior: SnackBarBehavior.floating,
@@ -153,11 +153,11 @@ class _CustomerManageState extends State<CustomerManage> {
     }
   }
 
-  /* Hàm này dùng để lấy các Reader ở trang thứ Index và hiển thị lên bảng */
-  Future<void> _loadReadersOfPageIndex(int pageIndex) async {
+  /* Hàm này dùng để lấy các KH ở trang thứ Index và hiển thị lên bảng */
+  Future<void> _loadKHsOfPageIndex(int pageIndex) async {
     String searchText = _searchController.text.toLowerCase();
 
-    List<KhachHang> newReaderRows = searchText.isEmpty
+    List<KhachHang> newKHRows = searchText.isEmpty
         ? await dbProcess.queryKhachHang(numberRowIgnore: (pageIndex - 1) * 8)
         : await dbProcess.queryKhachHangFullnameWithString(
             numberRowIgnore: (pageIndex - 1) * 8,
@@ -165,7 +165,7 @@ class _CustomerManageState extends State<CustomerManage> {
           );
 
     setState(() {
-      _readerRows = newReaderRows;
+      _KHRows = newKHRows;
       /* 
       Chuyển sang trang khác phải cho _selectedRow = -1
       VD: 
@@ -190,7 +190,7 @@ class _CustomerManageState extends State<CustomerManage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: FutureBuilder(
-        future: _futureRecentReaders,
+        future: _futureRecentKHs,
         builder: (ctx, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -198,7 +198,7 @@ class _CustomerManageState extends State<CustomerManage> {
             );
           }
 
-          int totalPages = _readerCount ~/ 8 + min(_readerCount % 8, 1);
+          int totalPages = _KHCount ~/ 8 + min(_KHCount % 8, 1);
 
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 30),
@@ -215,10 +215,10 @@ class _CustomerManageState extends State<CustomerManage> {
                     */
                     if (_searchController.text == value) {
                       _paginationController.text = '1';
-                      _readerCount =
+                      _KHCount =
                           await dbProcess.queryCountKhachHangFullnameWithString(
                               _searchController.text);
-                      _loadReadersOfPageIndex(1);
+                      _loadKHsOfPageIndex(1);
                     }
                   },
                 ),
@@ -228,10 +228,10 @@ class _CustomerManageState extends State<CustomerManage> {
                   children: [
                     /* 
                     Đây là nút "Thêm độc giả" mới,
-                    Logic xử lý khi nhấn _logicAddReader xem ở bên trên
+                    Logic xử lý khi nhấn _logicAddKH xem ở bên trên
                     */
                     FilledButton.icon(
-                      onPressed: _logicAddReader,
+                      onPressed: _logicAddKH,
                       icon: const Icon(Icons.add_rounded),
                       label: const Text('Thêm khách hàng'),
                       style: TextButton.styleFrom(
@@ -249,7 +249,7 @@ class _CustomerManageState extends State<CustomerManage> {
                     Lúc này _selectedRow đã nằm ngoài mảng, và nút "Xóa độc giả" vẫn chưa được Disable
                     => Có khả năng gây ra lỗi
                     Solution: Sau khi xóa phải kiểm tra lại 
-                    xem _selectedRow có nằm ngoài phạm vi của _readerRows hay không.
+                    xem _selectedRow có nằm ngoài phạm vi của _KHRows hay không.
                     */
                     IconButton.filled(
                       onPressed: _selectedRow == -1
@@ -260,7 +260,7 @@ class _CustomerManageState extends State<CustomerManage> {
                                 builder: (ctx) => AlertDialog(
                                   title: const Text('Xác nhận'),
                                   content: Text(
-                                      'Bạn có chắc xóa Khách hàng ${_readerRows[_selectedRow].hoTen}?'),
+                                      'Bạn có chắc xóa Khách hàng ${_KHRows[_selectedRow].hoTen}?'),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
@@ -272,14 +272,14 @@ class _CustomerManageState extends State<CustomerManage> {
                                       child: const Text('Huỷ'),
                                     ),
                                     FilledButton(
-                                      onPressed: _logicDeleteReader,
+                                      onPressed: _logicDeleteKH,
                                       child: const Text('Có'),
                                     ),
                                   ],
                                 ),
                               );
 
-                              if (_selectedRow >= _readerRows.length) {
+                              if (_selectedRow >= _KHRows.length) {
                                 _selectedRow = -1;
                               }
                             },
@@ -289,10 +289,10 @@ class _CustomerManageState extends State<CustomerManage> {
                     const SizedBox(width: 12),
                     /* 
                     Nút "Sửa thông tin Độc Giả" 
-                    Logic xử lý _logicEditReader xem ở phần khai báo bên trên
+                    Logic xử lý _logicEditKH xem ở phần khai báo bên trên
                     */
                     IconButton.filled(
-                      onPressed: _selectedRow == -1 ? null : _logicEditReader,
+                      onPressed: () => _selectedRow == -1 ? null : _logicEditKH,
                       icon: const Icon(Icons.edit),
                       style: myIconButtonStyle,
                     ),
@@ -332,9 +332,9 @@ class _CustomerManageState extends State<CustomerManage> {
                         ),
                       ),
                       rows: List.generate(
-                        _readerRows.length,
+                        _KHRows.length,
                         (index) {
-                          KhachHang reader = _readerRows[index];
+                          KhachHang khachHang = _KHRows[index];
                           /* Thẻ Độc Giả quá hạn sẽ tô màu xám (black26) */
                           TextStyle cellTextStyle =
                               const TextStyle(color: Colors.black);
@@ -348,18 +348,18 @@ class _CustomerManageState extends State<CustomerManage> {
                               setState(() {
                                 _selectedRow = index;
                               });
-                              _logicEditReader();
+                              _logicEditKH();
                             },
                             cells: [
                               DataCell(
                                 Text(
-                                  reader.maKhachHang.toString(),
+                                  khachHang.maKhachHang.toString(),
                                   style: cellTextStyle,
                                 ),
                               ),
                               DataCell(
                                 Text(
-                                  reader.cccd.toString(),
+                                  khachHang.cccd.toString(),
                                   style: cellTextStyle,
                                 ),
                               ),
@@ -369,7 +369,7 @@ class _CustomerManageState extends State<CustomerManage> {
                                   constraints:
                                       const BoxConstraints(maxWidth: 150),
                                   child: Text(
-                                    reader.hoTen
+                                    khachHang.hoTen
                                         .capitalizeFirstLetterOfEachWord(),
                                     style: cellTextStyle,
                                   ),
@@ -377,19 +377,19 @@ class _CustomerManageState extends State<CustomerManage> {
                               ),
                               DataCell(
                                 Text(
-                                  reader.ngaySinh.toVnFormat(),
+                                  khachHang.ngaySinh.toVnFormat(),
                                   style: cellTextStyle,
                                 ),
                               ),
                               DataCell(
                                 Text(
-                                  reader.soDienThoai,
+                                  khachHang.soDienThoai,
                                   style: cellTextStyle,
                                 ),
                               ),
                               DataCell(
                                 Text(
-                                  reader.hangGPLX!
+                                  khachHang.hangGPLX!
                                       .capitalizeFirstLetterOfEachWord(),
                                   style: cellTextStyle,
                                 ),
@@ -403,7 +403,9 @@ class _CustomerManageState extends State<CustomerManage> {
                                   constraints:
                                       const BoxConstraints(maxWidth: 250),
                                   child: Text(
-                                    reader.ghiChu == null ? '' : reader.ghiChu!,
+                                    khachHang.ghiChu == null
+                                        ? ''
+                                        : khachHang.ghiChu!,
                                     style: cellTextStyle,
                                   ),
                                 ),
@@ -415,12 +417,12 @@ class _CustomerManageState extends State<CustomerManage> {
                     ),
                   ),
                 ),
-                if (_readerCount > 0) const Spacer(),
-                _readerCount > 0
+                if (_KHCount > 0) const Spacer(),
+                _KHCount > 0
                     ? Pagination(
                         controller: _paginationController,
                         maxPages: totalPages,
-                        onChanged: _loadReadersOfPageIndex,
+                        onChanged: _loadKHsOfPageIndex,
                       )
                     : const Expanded(
                         child: Center(

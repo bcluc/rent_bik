@@ -40,7 +40,7 @@ class DbProcess {
 
     /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
     final response = await http.get(Uri.parse('$_baseUrl/get_Customers.php')
-        .replace(queryParameters: {'page': numberRowIgnore.toString()}));
+        .replace(queryParameters: {'offset': numberRowIgnore.toString()}));
     if (response.statusCode == 200) {
       //print(response.body);
 
@@ -61,7 +61,7 @@ class DbProcess {
     /* Lấy 10 dòng dữ liệu Độc Giả được thêm gần đây */
     List<Map<String, dynamic>> data = await _database.rawQuery(
       '''
-      select * from DocGia 
+      select * from KhachHang 
       where HoTen like ? or SoDienThoai like ?
       limit ?, 8
       ''',
@@ -107,28 +107,45 @@ class DbProcess {
   }
 
   Future<int> insertKhachHang(KhachHang newKhachHang) async {
-    return 0;
-    //return await _database.insert('KhachHang', newKhachHang.toMap());
+    int newMaKH = 0;
+    final response = await http.post(
+      Uri.parse('$_baseUrl/add_Customer.php'),
+      body: jsonEncode(<String, String?>{
+        "CCCD": newKhachHang.cccd,
+        "HoTen": newKhachHang.hoTen,
+        "NgaySinh": newKhachHang.ngaySinh.toVnFormat(),
+        "SoDienThoai": newKhachHang.soDienThoai,
+        "HangGPLX": newKhachHang.hangGPLX,
+        "GhiChu": newKhachHang.ghiChu
+      }),
+    );
+    if (response.statusCode == 200) {
+      newMaKH = json.decode(response.body)['MaKH'];
+    } else {
+      // Handle error if needed
+    }
+    return newMaKH;
   }
 
   Future<void> updateKhachHang(KhachHang updatedKhachHang) async {
-    await _database.rawUpdate(
-      '''
-      update KhachHang 
-      set CCCD = ?, HoTen = ?, NgaySinh = ?, SoDienThoai = ?, 
-      HangGPLX = ?, GhiChu = ?
-      where MaKhachHang  = ?
-      ''',
-      [
-        updatedKhachHang.cccd,
-        updatedKhachHang.hoTen,
-        updatedKhachHang.ngaySinh.toVnFormat(),
-        updatedKhachHang.soDienThoai,
-        updatedKhachHang.hangGPLX,
-        updatedKhachHang.ghiChu,
-        updatedKhachHang.maKhachHang,
-      ],
+    final response = await http.post(
+      Uri.parse('$_baseUrl/update_Customer.php'),
+      body: jsonEncode(<String, String?>{
+        "MaKhachHang": updatedKhachHang.maKhachHang.toString(),
+        "CCCD": updatedKhachHang.cccd,
+        "HoTen": updatedKhachHang.hoTen,
+        "NgaySinh": updatedKhachHang.ngaySinh.toVnFormat(),
+        "SoDienThoai": updatedKhachHang.soDienThoai,
+        "HangGPLX": updatedKhachHang.hangGPLX,
+        "GhiChu": updatedKhachHang.ghiChu
+      }),
     );
+    if (response.statusCode == 200) {
+      // Success
+    } else {
+      // Handle error if needed
+    }
+    return;
   }
 
   Future<void> deleteKhachHang(int maKhachHang) async {

@@ -64,7 +64,7 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
         widget.editKhachHang!.cccd = _identityController.text;
         widget.editKhachHang!.soDienThoai = _phoneController.text;
         widget.editKhachHang!.hangGPLX = _lincenseController.text.toLowerCase();
-        widget.editKhachHang!.ghiChu = _noteController.text;
+        widget.editKhachHang!.ghiChu = _noteController.text ?? "";
 
         await dbProcess.updateKhachHang(widget.editKhachHang!);
 
@@ -106,16 +106,10 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
       _dobController.text = widget.editKhachHang!.ngaySinh.toVnFormat();
       _phoneController.text = widget.editKhachHang!.soDienThoai;
       _lincenseController.text = widget.editKhachHang!.hangGPLX!.toUpperCase();
-      _noteController.text = widget.editKhachHang!.ghiChu!;
+      _noteController.text = widget.editKhachHang!.ghiChu == null
+          ? ""
+          : widget.editKhachHang!.ghiChu!;
     }
-    // else {
-    //   /*
-    //   Nếu là thêm mới khách hàng, thì thiết lập sẵn Creation và ExpriationDate
-    //   CreationDate là DateTime.now()
-    //   ExpriationDate là DateTime.now() + 6 tháng
-    //   */
-    //   setCreationExpriationDate(DateTime.now());
-    // }
   }
 
   @override
@@ -219,6 +213,7 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
                 LabelTextFormField(
                   labelText: 'Ghi chú',
                   controller: _noteController,
+                  initText: "",
                 ),
                 //
                 const SizedBox(height: 50),

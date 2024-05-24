@@ -8,7 +8,7 @@ class KhachHang {
     required this.hoTen,
     required this.ngaySinh,
     required this.soDienThoai,
-    required this.hangGPLX,
+    this.hangGPLX,
     this.ghiChu,
   });
 
