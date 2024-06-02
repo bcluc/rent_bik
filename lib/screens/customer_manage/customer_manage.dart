@@ -31,8 +31,8 @@ class _CustomerManageState extends State<CustomerManage> {
   int _selectedRow = -1;
 
   /* 2 biến này không set final bởi vì nó sẽ thay đổi giá trị khi người dùng tương tác */
-  late List<KhachHang> _KHRows;
-  late int _KHCount;
+  late List<KhachHang> _khachHangRows;
+  late int _khachHangCount;
 
   late final Future<void> _futureRecentKHs = _getRecentKHs();
   Future<void> _getRecentKHs() async {
@@ -41,8 +41,8 @@ class _CustomerManageState extends State<CustomerManage> {
     Tạo chuyển động mượt mà 
     */
     await Future.delayed(kTabScrollDuration);
-    _KHRows = await dbProcess.queryKhachHang(numberRowIgnore: 1);
-    _KHCount = await dbProcess.queryCountKhachHang();
+    _khachHangRows = await dbProcess.queryKhachHang(numberRowIgnore: 1);
+    _khachHangCount = await dbProcess.queryCountKhachHang();
   }
 
   final _searchController = TextEditingController();
@@ -62,10 +62,10 @@ class _CustomerManageState extends State<CustomerManage> {
       // print(
       //     "('${newKH.fullname}', '${newKH.dob.toVnFormat()}', '${newKH.address}', '${newKH.phoneNumber}', '${newKH.creationDate.toVnFormat()}', '${newKH.expirationDate.toVnFormat()}', 0),");
       setState(() {
-        if (_KHRows.length < 8) {
-          _KHRows.add(newKH);
+        if (_khachHangRows.length < 8) {
+          _khachHangRows.add(newKH);
         }
-        _KHCount++;
+        _khachHangCount++;
         // print('total page = ${_KHCount ~/ 8 + min(_KHCount % 8, 1)}');
       });
     }
@@ -81,7 +81,7 @@ class _CustomerManageState extends State<CustomerManage> {
     String? message = await showDialog(
       context: context,
       builder: (ctx) => AddEditCustomerForm(
-        editKhachHang: _KHRows[_selectedRow],
+        editKhachHang: _khachHangRows[_selectedRow],
       ),
     );
 
@@ -95,11 +95,11 @@ class _CustomerManageState extends State<CustomerManage> {
   Hàm này là logic Xóa Độc giả 
   */
   Future<void> _logicDeleteKH() async {
-    var deleteKHName = _KHRows[_selectedRow].hoTen;
+    var deleteKHName = _khachHangRows[_selectedRow].hoTen;
 
     /* Xóa dòng dữ liệu*/
     await dbProcess.deleteKhachHang(
-      _KHRows[_selectedRow].maKhachHang!,
+      _khachHangRows[_selectedRow].maKhachHang!,
     );
 
     /* 
@@ -108,22 +108,22 @@ class _CustomerManageState extends State<CustomerManage> {
     Nếu giảm _KHCount đi 1 đơn vị trước khi tính totalPages
     thì totalPages chỉ còn 2 => SAI 
     */
-    int totalPages = _KHCount ~/ 8 + min(_KHCount % 8, 1);
+    int totalPages = _khachHangCount ~/ 8 + min(_khachHangCount % 8, 1);
     int currentPage = int.parse(_paginationController.text);
 
-    _KHCount--;
+    _khachHangCount--;
 
     // print('totalPage = $totalPages');
 
     if (currentPage == totalPages) {
-      _KHRows.removeAt(_selectedRow);
+      _khachHangRows.removeAt(_selectedRow);
       /* 
       Trường hợp đặc biệt:
       Thủ thư đang ở trang cuối cùng và xóa nốt dòng cuối cùng 
       thì phải chuyển lại sang trang trước đó.
       VD: Xóa hết các dòng ở trang 3 thì tự động chuyển về trang 2
       */
-      if (_KHRows.isEmpty && _KHCount > 0) {
+      if (_khachHangRows.isEmpty && _khachHangCount > 0) {
         currentPage--;
         _paginationController.text = currentPage.toString();
         _loadKHsOfPageIndex(currentPage);
@@ -158,14 +158,15 @@ class _CustomerManageState extends State<CustomerManage> {
     String searchText = _searchController.text.toLowerCase();
 
     List<KhachHang> newKHRows = searchText.isEmpty
-        ? await dbProcess.queryKhachHang(numberRowIgnore: (pageIndex - 1) * 8)
+        ? await dbProcess.queryKhachHang(
+            numberRowIgnore: (pageIndex - 1) * 8 + 1)
         : await dbProcess.queryKhachHangFullnameWithString(
-            numberRowIgnore: (pageIndex - 1) * 8,
+            numberRowIgnore: (pageIndex - 1) * 8 + 1,
             str: searchText,
           );
 
     setState(() {
-      _KHRows = newKHRows;
+      _khachHangRows = newKHRows;
       /* 
       Chuyển sang trang khác phải cho _selectedRow = -1
       VD: 
@@ -198,7 +199,7 @@ class _CustomerManageState extends State<CustomerManage> {
             );
           }
 
-          int totalPages = _KHCount ~/ 8 + min(_KHCount % 8, 1);
+          int totalPages = _khachHangCount ~/ 8 + min(_khachHangCount % 8, 1);
 
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 30),
@@ -215,7 +216,7 @@ class _CustomerManageState extends State<CustomerManage> {
                     */
                     if (_searchController.text == value) {
                       _paginationController.text = '1';
-                      _KHCount =
+                      _khachHangCount =
                           await dbProcess.queryCountKhachHangFullnameWithString(
                               _searchController.text);
                       _loadKHsOfPageIndex(1);
@@ -260,7 +261,7 @@ class _CustomerManageState extends State<CustomerManage> {
                                 builder: (ctx) => AlertDialog(
                                   title: const Text('Xác nhận'),
                                   content: Text(
-                                      'Bạn có chắc xóa Khách hàng ${_KHRows[_selectedRow].hoTen}?'),
+                                      'Bạn có chắc xóa Khách hàng ${_khachHangRows[_selectedRow].hoTen}?'),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
@@ -279,7 +280,7 @@ class _CustomerManageState extends State<CustomerManage> {
                                 ),
                               );
 
-                              if (_selectedRow >= _KHRows.length) {
+                              if (_selectedRow >= _khachHangRows.length) {
                                 _selectedRow = -1;
                               }
                             },
@@ -292,7 +293,9 @@ class _CustomerManageState extends State<CustomerManage> {
                     Logic xử lý _logicEditKH xem ở phần khai báo bên trên
                     */
                     IconButton.filled(
-                      onPressed: () => _selectedRow == -1 ? null : _logicEditKH,
+                      onPressed: () {
+                        _selectedRow == -1 ? null : _logicEditKH();
+                      },
                       icon: const Icon(Icons.edit),
                       style: myIconButtonStyle,
                     ),
@@ -332,9 +335,9 @@ class _CustomerManageState extends State<CustomerManage> {
                         ),
                       ),
                       rows: List.generate(
-                        _KHRows.length,
+                        _khachHangRows.length,
                         (index) {
-                          KhachHang khachHang = _KHRows[index];
+                          KhachHang khachHang = _khachHangRows[index];
                           /* Thẻ Độc Giả quá hạn sẽ tô màu xám (black26) */
                           TextStyle cellTextStyle =
                               const TextStyle(color: Colors.black);
@@ -417,8 +420,8 @@ class _CustomerManageState extends State<CustomerManage> {
                     ),
                   ),
                 ),
-                if (_KHCount > 0) const Spacer(),
-                _KHCount > 0
+                if (_khachHangCount > 0) const Spacer(),
+                _khachHangCount > 0
                     ? Pagination(
                         controller: _paginationController,
                         maxPages: totalPages,

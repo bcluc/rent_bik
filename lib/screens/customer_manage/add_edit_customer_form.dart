@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_bik/components/label_text_form_field.dart';
@@ -64,7 +66,7 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
         widget.editKhachHang!.cccd = _identityController.text;
         widget.editKhachHang!.soDienThoai = _phoneController.text;
         widget.editKhachHang!.hangGPLX = _lincenseController.text.toLowerCase();
-        widget.editKhachHang!.ghiChu = _noteController.text ?? "";
+        widget.editKhachHang!.ghiChu = _noteController.text;
 
         await dbProcess.updateKhachHang(widget.editKhachHang!);
 
@@ -96,6 +98,7 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
   void initState() {
     super.initState();
     if (widget.editKhachHang != null) {
+      //print(widget.editKhachHang.toString());
       /*
       Nếu là chỉnh sửa khách hàng
       thì phải fill thông tin vào của khách hàng cần chỉnh sửa vào form
@@ -207,13 +210,12 @@ class _AddEditCustomerFormState extends State<AddEditCustomerForm> {
                   style: TextStyle(fontStyle: FontStyle.italic),
                 ),
                 const SizedBox(height: 4),
-
-                //
-                const SizedBox(height: 10),
                 LabelTextFormField(
                   labelText: 'Ghi chú',
                   controller: _noteController,
-                  initText: "",
+                  customValidator: (value) {
+                    return null;
+                  },
                 ),
                 //
                 const SizedBox(height: 50),

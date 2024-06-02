@@ -89,8 +89,7 @@ class _DongXeFormState extends State<DongXeForm> {
                     onEditingComplete: () async {
                       // Thêm Dòng Xe mới vào Database
                       DongXe newDongXe = DongXe(
-                        null,
-                        _themDongXeController.text,
+                        tenDongXe: _themDongXeController.text,
                       );
                       int returningId = await dbProcess.insertDongXe(newDongXe);
                       newDongXe.maDongXe = returningId;

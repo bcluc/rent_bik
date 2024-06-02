@@ -66,7 +66,9 @@ enum TinhTrang {
 
 class _BikeFormState extends State<BikeForm> {
   final _formKey = GlobalKey<FormState>();
-  final _dateBuyController = TextEditingController();
+  final _dateBuyController = TextEditingController(
+    text: DateTime.now().toVnFormat(),
+  );
   final _bsxController = TextEditingController();
   final _tinhTrangController = TextEditingController();
   final _loaiXeController = TextEditingController();
@@ -74,6 +76,7 @@ class _BikeFormState extends State<BikeForm> {
   final _giaThueController = TextEditingController();
   final _giaMuaController = TextEditingController();
   final _soHanhTrinhController = TextEditingController();
+  final _soBHXController = TextEditingController();
 
   TinhTrang? selectedTinhTrang;
   GPLX? selectedGPLX;
@@ -90,19 +93,16 @@ class _BikeFormState extends State<BikeForm> {
 
       if (widget.editXe == null) {
         XeDTO newXeDto = XeDTO(
-          null,
-          _bsxController.text,
-          _tinhTrangController.text,
-          int.parse(_giaThueController.text),
-          int.parse(_giaMuaController.text),
-          _loaiXeController.text,
-          _hangGPLXController.text,
-          // ignore: use_build_context_synchronously
-          context.read<SelectedDongXeCubit>().state,
-          // ignore: use_build_context_synchronously
-          context.read<SelectedHangXeCubit>().state,
-          vnDateFormat.parse(_dateBuyController.text),
-          int.parse(_soHanhTrinhController.text),
+          bienSoXe: _bsxController.text,
+          tinhTrang: _tinhTrangController.text,
+          giaThue: int.parse(_giaThueController.text),
+          hangGPLX: _hangGPLXController.text,
+          loaiXe: _loaiXeController.text,
+          giaMua: int.parse(_giaMuaController.text),
+          dongXes: context.read<SelectedDongXeCubit>().state,
+          ngayMua: vnDateFormat.parse(_dateBuyController.text),
+          hangXes: context.read<SelectedHangXeCubit>().state,
+          soHanhTrinh: int.parse(_soHanhTrinhController.text),
         );
 
         int returningId = await dbProcess.insertXeDto(newXeDto);
@@ -160,10 +160,11 @@ class _BikeFormState extends State<BikeForm> {
       _bsxController.text = widget.editXe!.bienSoXe;
       _tinhTrangController.text = widget.editXe!.tinhTrang;
       _loaiXeController.text = widget.editXe!.loaiXe;
-      _hangGPLXController.text = widget.editXe!.hangGPLX!;
+      _hangGPLXController.text = widget.editXe!.hangGPLX;
       _giaThueController.text = widget.editXe!.giaThue.toString();
       _giaMuaController.text = widget.editXe!.giaMua.toString();
       _soHanhTrinhController.text = widget.editXe!.soHanhTrinh.toString();
+      _soBHXController.text = widget.editXe!.soBHX.toString();
     }
   }
 
@@ -177,6 +178,7 @@ class _BikeFormState extends State<BikeForm> {
     _giaThueController.dispose();
     _giaMuaController.dispose();
     _soHanhTrinhController.dispose();
+    _soBHXController.dispose();
     super.dispose();
   }
 

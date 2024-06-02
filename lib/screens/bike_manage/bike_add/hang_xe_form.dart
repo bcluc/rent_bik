@@ -89,8 +89,7 @@ class _HangXeFormState extends State<HangXeForm> {
                     onEditingComplete: () async {
                       // Thêm Dòng Xe mới vào Database
                       HangXe newHangXe = HangXe(
-                        null,
-                        _themHangXeController.text,
+                        tenHangXe: _themHangXeController.text,
                       );
                       int returningId = await dbProcess.insertHangXe(newHangXe);
                       newHangXe.maHangXe = returningId;

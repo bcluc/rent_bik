@@ -2,7 +2,7 @@ class DongXe {
   int? maDongXe;
   String tenDongXe;
 
-  DongXe(this.maDongXe, this.tenDongXe);
+  DongXe({this.maDongXe, required this.tenDongXe});
 
   bool? get isEmpty => null;
 
@@ -11,5 +11,10 @@ class DongXe {
       'MaDongXe': maDongXe,
       'TenDongXe': tenDongXe,
     };
+  }
+
+  factory DongXe.fromJson(Map<String, dynamic> json) {
+    return DongXe(
+        maDongXe: int.parse(json['MaDongXe']), tenDongXe: json['TenDongXe']);
   }
 }

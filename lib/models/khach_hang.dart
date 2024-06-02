@@ -1,5 +1,4 @@
 import 'package:rent_bik/utils/common_variables.dart';
-import 'package:rent_bik/utils/extesion.dart';
 
 class KhachHang {
   KhachHang({

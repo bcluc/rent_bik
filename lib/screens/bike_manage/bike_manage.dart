@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rent_bik/screens/bike_manage/bike_warehouse/bike_warehouse.dart';
+import 'package:rent_bik/screens/customer_manage/customer_manage.dart';
 
 class BikeManage extends StatefulWidget {
   const BikeManage({super.key});

@@ -1,15 +1,8 @@
-import 'package:bitsdojo_window/bitsdojo_window.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rent_bik/components/password_text_field.dart';
-import 'package:rent_bik/main.dart';
-import 'package:rent_bik/models/khach_hang.dart';
-import 'package:rent_bik/screens/auth/login_view.dart';
 import 'package:rent_bik/screens/bike_rental_management.dart';
-import 'package:rent_bik/screens/customer_manage/add_edit_customer_form.dart';
 
 import '../../utils/common_variables.dart';
 
@@ -21,16 +14,16 @@ class LoginLayout extends StatefulWidget {
 }
 
 class _LoginLayoutState extends State<LoginLayout> {
-  final _pageController = PageController();
-  double _pageIndex = 0;
   bool _isProcessing = false;
   String _errorText = '';
 
   final _passwordController = TextEditingController();
   void _submit() async {
+    // List<XeDTO> xes = await dbProcess.queryXeDto();
+    // print('\n\n\n');
+    // print(xes.first.dongXes.first.maDongXe);
     // check
     final enteredPassword = _passwordController.text;
-
     _errorText = '';
     if (enteredPassword.isEmpty) {
       _errorText = 'Bạn chưa nhập Mật khẩu';
@@ -91,14 +84,6 @@ class _LoginLayoutState extends State<LoginLayout> {
     //fetchData();
   }
 
-  void fetchData() async {
-    List<KhachHang> _readerRows =
-        await dbProcess.queryKhachHang(numberRowIgnore: 1);
-    for (KhachHang reader in _readerRows) {
-      print(reader.cccd);
-    }
-  }
-
   @override
   void dispose() {
     _passwordController.dispose();
@@ -107,8 +92,6 @@ class _LoginLayoutState extends State<LoginLayout> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.sizeOf(context).width;
-
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
