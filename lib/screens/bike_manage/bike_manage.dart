@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rent_bik/screens/bike_manage/bike_warehouse/bike_warehouse.dart';
+import 'package:rent_bik/screens/bike_manage/insurance_manage/insurance_manage.dart';
 import 'package:rent_bik/screens/customer_manage/customer_manage.dart';
 
 class BikeManage extends StatefulWidget {
@@ -82,7 +83,7 @@ class _BikeManageState extends State<BikeManage> with TickerProviderStateMixin {
               children: const [
                 BikeWarehouse(),
                 BikeWarehouse(),
-                BikeWarehouse()
+                InsuranceManage(),
               ],
             ),
           ),

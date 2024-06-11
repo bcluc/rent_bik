@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rent_bik/components/password_text_field.dart';
+import 'package:rent_bik/main.dart';
+import 'package:rent_bik/models/bao_hiem_xe.dart';
 import 'package:rent_bik/screens/bike_rental_management.dart';
-
 import '../../utils/common_variables.dart';
 
 class LoginLayout extends StatefulWidget {
@@ -19,10 +20,10 @@ class _LoginLayoutState extends State<LoginLayout> {
 
   final _passwordController = TextEditingController();
   void _submit() async {
-    // List<XeDTO> xes = await dbProcess.queryXeDto();
-    // print('\n\n\n');
-    // print(xes.first.dongXes.first.maDongXe);
-    // check
+    List<BaoHiemXe> xes = await dbProcess.queryBaoHiemXe(numberRowIgnore: 1);
+    print('\n\n\n');
+    print(xes.first.maBHX);
+
     final enteredPassword = _passwordController.text;
     _errorText = '';
     if (enteredPassword.isEmpty) {

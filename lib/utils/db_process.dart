@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:rent_bik/dto/bao_hiem_xe_dto.dart';
 import 'package:rent_bik/dto/dong_xe_dto.dart';
 import 'package:rent_bik/dto/hang_xe_dto.dart';
 import 'package:rent_bik/dto/xe_dto.dart';
+import 'package:rent_bik/models/bao_hiem_xe.dart';
 import 'package:rent_bik/models/dong_xe.dart';
 import 'package:rent_bik/models/hang_xe.dart';
 import 'package:rent_bik/models/khach_hang.dart';
@@ -462,6 +464,117 @@ class DbProcess {
       Uri.parse('$_baseUrl/delete_HangXe.php'),
       body: jsonEncode(<String, String>{
         'MaHangXe': maHangXe.toString(),
+      }),
+    );
+    if (response.statusCode == 200) {
+      //print(response.body);
+    } else {
+      // Handle error if needed
+    }
+    return;
+  }
+
+  //
+  //
+  // CODING BHX
+  //
+  //
+
+  Future<List<BaoHiemXe>> queryBaoHiemXe({
+    required int numberRowIgnore,
+  }) async {
+    List<BaoHiemXe> danhSachBHX = [];
+
+    /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
+    final response = await http.get(Uri.parse('$_baseUrl/get_BaoHiem.php')
+        .replace(queryParameters: {'offset': numberRowIgnore.toString()}));
+    if (response.statusCode == 200) {
+      //print(response.body);
+
+      List<dynamic> jsonData = json.decode(response.body)['BaoHiemXe'];
+      danhSachBHX = jsonData.map((data) => BaoHiemXe.fromJson(data)).toList();
+    } else {
+      // Handle error if needed
+    }
+    return danhSachBHX;
+  }
+
+  Future<BaoHiemXeDTO> queryBaoHiemXeFullnameWithBSX({
+    required String str,
+  }) async {
+    /* Lấy 10 dòng dữ liệu Độc Giả được thêm gần đây */
+    late BaoHiemXeDTO bhxGet;
+
+    /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
+    final response = await http.get(Uri.parse('$_baseUrl/get_BaoHiem.php')
+        .replace(queryParameters: {'BienSoXe': str}));
+    if (response.statusCode == 200) {
+      //print(response.body);
+      bhxGet = BaoHiemXeDTO.fromJson(json.decode(response.body)['data']);
+    } else {
+      // Handle error if needed
+    }
+    return bhxGet;
+  }
+
+  Future<int> queryCountBaoHiemXe() async {
+    String total = '0';
+    /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
+    final response = await http.get(Uri.parse('$_baseUrl/get_BaoHiem.php'));
+    if (response.statusCode == 200) {
+      //print(response.body);
+
+      total = json.decode(response.body)['total_BaoHiemXe'];
+    } else {
+      // Handle error if needed
+    }
+    return int.parse(total);
+  }
+
+  Future<int> insertBaoHiemXe(BaoHiemXe newBHX, int maXe) async {
+    int newMaBHX = 0;
+    final response = await http.post(
+      Uri.parse('$_baseUrl/add_BaoHiem.php'),
+      body: jsonEncode(<String, Object>{
+        "MaXe": maXe,
+        "SoBHX": newBHX.soBHX,
+        "NgayMua": newBHX.ngayMua.toVnFormat(),
+        "NgayHetHan": newBHX.ngayHetHan.toVnFormat(),
+        "SoTien": newBHX.soTien.toString(),
+      }),
+    );
+    if (response.statusCode == 200) {
+      newMaBHX = json.decode(response.body)['MaBHX'];
+    } else {
+      // Handle error if needed
+    }
+    return newMaBHX;
+  }
+
+  Future<void> updateBaoHiemXe(BaoHiemXe updatedKhachHang) async {
+    final response = await http.post(
+      Uri.parse('$_baseUrl/update_BaoHiem.php'),
+      body: jsonEncode(<String, Object?>{
+        "MaBHX": updatedKhachHang.maBHX,
+        "SoBHX": updatedKhachHang.soBHX,
+        "NgayMua": updatedKhachHang.ngayMua.toVnFormat(),
+        "NgayHetHan": updatedKhachHang.ngayHetHan.toVnFormat(),
+        "SoTien": updatedKhachHang.soTien.toString(),
+      }),
+    );
+    if (response.statusCode == 200) {
+      // Success
+    } else {
+      // Handle error if needed
+    }
+    return;
+  }
+
+  Future<void> deleteBaoHiemXe(int maBHX) async {
+    final response = await http.delete(
+      Uri.parse('$_baseUrl/delete_BaoHiem.php'),
+      body: jsonEncode(<String, String>{
+        'MaBHX': maBHX.toString(),
       }),
     );
     if (response.statusCode == 200) {
