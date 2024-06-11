@@ -7,12 +7,15 @@ class BaoHiemXe {
   DateTime ngayMua;
   DateTime ngayHetHan;
   int soTien;
+  String bienSoXe;
+
   BaoHiemXe({
     this.maBHX,
     required this.soBHX,
     required this.ngayMua,
     required this.ngayHetHan,
     required this.soTien,
+    required this.bienSoXe,
   });
   factory BaoHiemXe.fromJson(Map<String, dynamic> json) {
     return BaoHiemXe(
@@ -21,6 +24,7 @@ class BaoHiemXe {
       ngayHetHan: vnDateFormat.parse(json['NgayHetHan'] as String),
       ngayMua: vnDateFormat.parse(json['NgayMua'] as String),
       soTien: int.parse(json['SoTien']),
+      bienSoXe: json['BienSoXe'],
     );
   }
 }

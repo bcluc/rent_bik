@@ -20,9 +20,9 @@ class _LoginLayoutState extends State<LoginLayout> {
 
   final _passwordController = TextEditingController();
   void _submit() async {
-    List<BaoHiemXe> xes = await dbProcess.queryBaoHiemXe(numberRowIgnore: 1);
-    print('\n\n\n');
-    print(xes.first.maBHX);
+    // List<BaoHiemXe> xes = await dbProcess.queryBaoHiemXe(numberRowIgnore: 1);
+    // print('\n\n\n');
+    // print(xes.first.maBHX);
 
     final enteredPassword = _passwordController.text;
     _errorText = '';

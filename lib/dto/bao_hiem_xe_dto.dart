@@ -7,34 +7,18 @@ class BaoHiemXeDTO {
   DateTime ngayMua;
   DateTime ngayHetHan;
   int soTien;
-  int? maXe;
   String bienSoXe;
-  String tinhTrang;
-  int giaThue;
-  String hangGPLX;
-  String loaiXe;
-  int giaMua;
-  int? maDongXe;
-  int? maHangXe;
-  int soHanhTrinh;
+  int maXe;
+
   BaoHiemXeDTO({
     this.maBHX,
     required this.soBHX,
     required this.ngayMua,
     required this.ngayHetHan,
     required this.soTien,
-    this.maXe,
     required this.bienSoXe,
-    required this.tinhTrang,
-    required this.giaThue,
-    required this.hangGPLX,
-    required this.loaiXe,
-    required this.giaMua,
-    this.maDongXe,
-    this.maHangXe,
-    required this.soHanhTrinh,
+    required this.maXe,
   });
-
   factory BaoHiemXeDTO.fromJson(Map<String, dynamic> json) {
     return BaoHiemXeDTO(
       maBHX: int.parse(json['MaBHX']),
@@ -42,16 +26,8 @@ class BaoHiemXeDTO {
       ngayHetHan: vnDateFormat.parse(json['NgayHetHan'] as String),
       ngayMua: vnDateFormat.parse(json['NgayMua'] as String),
       soTien: int.parse(json['SoTien']),
-      maXe: int.parse(json['MaXe']),
       bienSoXe: json['BienSoXe'],
-      tinhTrang: json['TinhTrang'],
-      giaThue: int.parse(json['GiaThue']),
-      hangGPLX: json['HangGPLX'],
-      loaiXe: json['LoaiXe'],
-      giaMua: int.parse(json['GiaMua']),
-      maDongXe: json['MaDongXe'],
-      maHangXe: json['MaHangXe'],
-      soHanhTrinh: int.parse(json['SoHanhTrinh']),
+      maXe: int.parse(json['MaXe']),
     );
   }
 }

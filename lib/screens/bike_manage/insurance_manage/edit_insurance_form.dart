@@ -74,8 +74,13 @@ class _EditBHXFormState extends State<EditBHXForm> {
     thì phải fill thông tin vào của khách hàng cần chỉnh sửa vào form
     */
     _bhxNumberController.text = widget.editBaoHiemXe.soBHX;
-    _ngayMuaController.text = widget.editBaoHiemXe.ngayMua.toVnFormat();
-    _ngayHetHanController.text = widget.editBaoHiemXe.ngayHetHan.toVnFormat();
+    widget.editBaoHiemXe.ngayMua == null
+        ? _ngayMuaController.text = ""
+        : _ngayMuaController.text = widget.editBaoHiemXe.ngayMua!.toVnFormat();
+    widget.editBaoHiemXe.ngayHetHan == null
+        ? _ngayHetHanController.text = ""
+        : _ngayHetHanController.text =
+            widget.editBaoHiemXe.ngayHetHan!.toVnFormat();
     _soTienController.text = widget.editBaoHiemXe.soTien.toString();
   }
 

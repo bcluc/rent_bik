@@ -1,15 +1,12 @@
 import 'dart:convert';
 import 'package:rent_bik/dto/bao_hiem_xe_dto.dart';
-import 'package:rent_bik/dto/dong_xe_dto.dart';
-import 'package:rent_bik/dto/hang_xe_dto.dart';
+import 'package:rent_bik/dto/bao_hiem_xe_new_dto.dart';
 import 'package:rent_bik/dto/xe_dto.dart';
 import 'package:rent_bik/models/bao_hiem_xe.dart';
 import 'package:rent_bik/models/dong_xe.dart';
 import 'package:rent_bik/models/hang_xe.dart';
 import 'package:rent_bik/models/khach_hang.dart';
-import 'package:rent_bik/models/xe.dart';
 import 'package:rent_bik/utils/extesion.dart';
-import 'package:sqflite/utils/utils.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:http/http.dart' as http;
 
@@ -194,18 +191,18 @@ class DbProcess {
     return danhSachXe;
   }
 
-  Future<int> insertXeDto(XeDTO newXeDto) async {
-    // Insert Xe
-    int returningId = await createXe(newXeDto);
+  // Future<int> insertXeDto(XeDTO newXeDto) async {
+  //   // Insert Xe
+  //   int returningId = await createXe(newXeDto);
 
-    bool isBHX = await initBHX(returningId, newXeDto.soBHX);
+  //   bool isBHX = await initBHX(returningId, newXeDto.soBHX);
 
-    if (isBHX) {
-      return returningId;
-    } else {
-      return 0;
-    }
-  }
+  //   if (isBHX) {
+  //     return returningId;
+  //   } else {
+  //     return 0;
+  //   }
+  // }
 
   Future<int> createXe(XeDTO newXeDto) async {
     // Insert Xe
@@ -295,7 +292,7 @@ class DbProcess {
   Future<int> queryCountXeFullnameWithString(String str) async {
     String total = '0';
     final response = await http.get(Uri.parse('$_baseUrl/search_Xe.php')
-        .replace(queryParameters: {'search': str}));
+        .replace(queryParameters: {'BienSoXe': str}));
     if (response.statusCode == 200) {
       //print(response.body);
       total = json.decode(response.body)['total_xe'];
@@ -323,25 +320,26 @@ class DbProcess {
   //
   // BẢO HIỂM
   //
-  Future<bool> initBHX(int maXe, String? soBHX) async {
-    bool returning = false;
-    final response = await http.post(
-      Uri.parse('$_baseUrl/add_BaoHiem.php'),
-      body: jsonEncode(<String, dynamic>{
-        "MaXe": maXe,
-        "SoBHX": soBHX,
-        "NgayMua": "",
-        "NgayHetHan": "",
-        "SoTien": "0"
-      }),
-    );
-    if (response.statusCode == 200) {
-      returning = (json.decode(response.body)['status'] == 'success');
-    } else {
-      // Handle error if needed
-    }
-    return returning;
-  }
+
+  // Future<bool> initBHX(int maXe, String? soBHX) async {
+  //   bool returning = false;
+  //   final response = await http.post(
+  //     Uri.parse('$_baseUrl/add_BaoHiem.php'),
+  //     body: jsonEncode(<String, dynamic>{
+  //       "MaXe": maXe,
+  //       "SoBHX": soBHX,
+  //       "NgayMua": "",
+  //       "NgayHetHan": "",
+  //       "SoTien": "0"
+  //     }),
+  //   );
+  //   if (response.statusCode == 200) {
+  //     returning = (json.decode(response.body)['status'] == 'success');
+  //   } else {
+  //     // Handle error if needed
+  //   }
+  //   return returning;
+  // }
 
   //
   // DÒNG XE
@@ -506,13 +504,55 @@ class DbProcess {
     late BaoHiemXeDTO bhxGet;
 
     /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
-    final response = await http.get(Uri.parse('$_baseUrl/get_BaoHiem.php')
-        .replace(queryParameters: {'BienSoXe': str}));
+    final response = await http.post(
+      Uri.parse('$_baseUrl/get_BaoHiem.php'),
+      body: jsonEncode(<String, String>{
+        "BienSoXe": str,
+      }),
+    );
     if (response.statusCode == 200) {
       //print(response.body);
       bhxGet = BaoHiemXeDTO.fromJson(json.decode(response.body)['data']);
-    } else {
-      // Handle error if needed
+    }
+    return bhxGet;
+  }
+
+  Future<BaoHiemXeNewDTO> queryNewBaoHiemXeSubmitedWithBSX({
+    required String str,
+  }) async {
+    /* Lấy 10 dòng dữ liệu Độc Giả được thêm gần đây */
+    late BaoHiemXeNewDTO bhxGet;
+
+    /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
+    final response = await http.post(
+      Uri.parse('$_baseUrl/get_BaoHiem.php'),
+      body: jsonEncode(<String, String>{
+        "BienSoXe": str,
+      }),
+    );
+    if (response.statusCode == 200) {
+      //print(response.body);
+      bhxGet = BaoHiemXeNewDTO.fromJson(json.decode(response.body)['data']);
+    }
+    return bhxGet;
+  }
+
+  Future<String?> queryStatusBHXWithBSX(
+    String str,
+  ) async {
+    /* Lấy 10 dòng dữ liệu Độc Giả được thêm gần đây */
+    String? bhxGet = "error";
+
+    /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
+    final response = await http.post(
+      Uri.parse('$_baseUrl/get_BaoHiem.php'),
+      body: jsonEncode(<String, String>{
+        "BienSoXe": str,
+      }),
+    );
+    if (response.statusCode == 200) {
+      //print(response.body);
+      bhxGet = (json.decode(response.body)['status']);
     }
     return bhxGet;
   }
@@ -532,7 +572,7 @@ class DbProcess {
   }
 
   Future<int> insertBaoHiemXe(BaoHiemXe newBHX, int maXe) async {
-    int newMaBHX = 0;
+    int newMaBHX = -1;
     final response = await http.post(
       Uri.parse('$_baseUrl/add_BaoHiem.php'),
       body: jsonEncode(<String, Object>{

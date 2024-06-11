@@ -1,7 +1,6 @@
 import 'dart:math';
-
+import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
-import 'package:rent_bik/components/my_search_bar.dart';
 import 'package:rent_bik/components/pagination.dart';
 import 'package:rent_bik/main.dart';
 import 'package:rent_bik/models/bao_hiem_xe.dart';
@@ -19,14 +18,16 @@ class InsuranceManage extends StatefulWidget {
 class _InsuranceManageState extends State<InsuranceManage> {
   // Danh sách Tên các cột trong Bảng Khách Hàng
   final List<String> _colsName = [
-    'STT',
+    'Mã BHX',
     'Số bảo hiểm',
+    'Biển số xe',
     'Ngày mua',
     'Ngày hết hạn',
     'Giá mua',
   ];
 
   int _selectedRow = -1;
+  bool _isSort = false;
 
   /* 2 biến này không set final bởi vì nó sẽ thay đổi giá trị khi người dùng tương tác */
   late List<BaoHiemXe> _bhxRows;
@@ -47,7 +48,15 @@ class _InsuranceManageState extends State<InsuranceManage> {
   Nếu có Độc giả mới được thêm (tức là đã điền đầy đủ thông tin hợp lệ + nhấn Save)
   thì phương thức showDialog() sẽ trả về một KH mới
   */
-  Future<void> _filterList() async {}
+  Future<void> _filterList() async {
+    setState(() {
+      if (_isSort) {
+        _bhxRows.sort((a, b) => a.ngayHetHan.compareTo(b.ngayHetHan));
+      } else {
+        _bhxRows.sort((a, b) => a.maBHX!.compareTo(b.maBHX!));
+      }
+    });
+  }
 
   /*
   Hàm này là logic xử lý khi người dùng nhấn vào nút Edit hoặc Long Press vào một Row trong bảng
@@ -183,12 +192,21 @@ class _InsuranceManageState extends State<InsuranceManage> {
                     Nút "Sửa thông tin Độc Giả" 
                     Logic xử lý _logicEditKH xem ở phần khai báo bên trên
                     */
-                    IconButton.filled(
+                    FilledButton.icon(
                       onPressed: () {
+                        _isSort = !_isSort;
                         _filterList();
                       },
                       icon: const Icon(Icons.filter_alt_rounded),
-                      style: myIconButtonStyle,
+                      label: Text(
+                          'Sắp xếp theo ${_isSort ? "ngày hết hạn" : "mã bảo hiểm"}'),
+                      style: TextButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 18, horizontal: 16),
+                      ),
                     ),
                     const Spacer(),
                     /* 
@@ -290,6 +308,18 @@ class _InsuranceManageState extends State<InsuranceManage> {
                               const TextStyle(color: Colors.black);
 
                           return DataRow(
+                            color: baoHiemXe.ngayHetHan < DateTime.now()
+                                ? MaterialStateProperty.resolveWith((states) {
+                                    if (states
+                                        .contains(MaterialState.selected)) {
+                                      return Theme.of(context)
+                                          .colorScheme
+                                          .primary
+                                          .withOpacity(0.3);
+                                    }
+                                    return Colors.black12;
+                                  })
+                                : null,
                             selected: _selectedRow == index,
                             onSelectChanged: (_) => setState(() {
                               _selectedRow = index;
@@ -315,6 +345,12 @@ class _InsuranceManageState extends State<InsuranceManage> {
                               ),
                               DataCell(
                                 Text(
+                                  baoHiemXe.bienSoXe.toString(),
+                                  style: cellTextStyle,
+                                ),
+                              ),
+                              DataCell(
+                                Text(
                                   baoHiemXe.ngayMua.toVnFormat(),
                                   style: cellTextStyle,
                                 ),
@@ -322,7 +358,12 @@ class _InsuranceManageState extends State<InsuranceManage> {
                               DataCell(
                                 Text(
                                   baoHiemXe.ngayHetHan.toVnFormat(),
-                                  style: cellTextStyle,
+                                  style: baoHiemXe.ngayHetHan < DateTime.now()
+                                      ? const TextStyle(
+                                          color:
+                                              Color.fromARGB(255, 155, 10, 0),
+                                          fontWeight: FontWeight.bold)
+                                      : cellTextStyle,
                                 ),
                               ),
                               DataCell(

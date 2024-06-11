@@ -105,7 +105,7 @@ class _BikeFormState extends State<BikeForm> {
           soHanhTrinh: int.parse(_soHanhTrinhController.text),
         );
 
-        int returningId = await dbProcess.insertXeDto(newXeDto);
+        int returningId = await dbProcess.createXe(newXeDto);
         newXeDto.maXe = returningId;
 
         if (mounted) {

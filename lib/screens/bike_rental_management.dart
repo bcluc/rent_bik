@@ -2,12 +2,8 @@ import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
-import 'package:rent_bik/dto/xe_dto.dart';
-import 'package:rent_bik/main.dart';
 import 'package:rent_bik/screens/bike_manage/bike_manage.dart';
 import 'package:rent_bik/screens/customer_manage/customer_manage.dart';
-import 'package:rent_bik/screens/maintance_manage/maintance_manage.dart';
-
 import '../components/doi_ma_pin.dart';
 import '../components/khoa_man_hinh_dialog.dart';
 
