@@ -7,6 +7,7 @@ import 'package:rent_bik/main.dart';
 import 'package:rent_bik/screens/bike_manage/bike_manage.dart';
 import 'package:rent_bik/screens/customer_manage/customer_manage.dart';
 import 'package:rent_bik/screens/maintance_manage/maintance_manage.dart';
+import 'package:rent_bik/screens/report/report.dart';
 
 import '../components/doi_ma_pin.dart';
 import '../components/khoa_man_hinh_dialog.dart';
@@ -185,7 +186,7 @@ class _BikeRentalManagementState extends State<BikeRentalManagement>
                 BikeManage(),
                 //MaintanceManage(),
                 BikeManage(),
-                BikeManage(),
+                Report(),
               ],
             ),
           ),
