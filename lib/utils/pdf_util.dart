@@ -239,7 +239,7 @@ class PdfApi {
 
     final dir = await getApplicationDocumentsDirectory();
 
-    final folderPath = '${dir.path}/ReaderLM Document';
+    final folderPath = '${dir.path}/RentBikDocument';
 
     // Kiểm tra xem thư mục có tồn tại hay không
     if (!await Directory(folderPath).exists()) {
@@ -247,7 +247,7 @@ class PdfApi {
       await Directory(folderPath).create();
     }
 
-    final file = File('${dir.path}/ReaderLM Document/$name.pdf');
+    final file = File('${dir.path}/RentBikDocument/$name.pdf');
 
     await file.writeAsBytes(bytes);
 

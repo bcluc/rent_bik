@@ -6,13 +6,17 @@ import 'package:rent_bik/screens/report/indicator.dart';
 
 import 'package:rent_bik/models/xe_chart.dart';
 
-class _LineChart extends StatelessWidget {
+class BaoCaoXe extends StatelessWidget {
   final List<ChartData> rentedCars;
   final List<ChartData> returnedCars;
   final List<ChartData> purchasedCars;
   bool isShowingMainData;
 
-  _LineChart(
+  Color xeMuonColor = const Color.fromRGBO(58, 166, 185, 1);
+  Color xeTraColor = const Color.fromRGBO(58, 166, 185, 1);
+  Color xeDaMuaColor = const Color.fromRGBO(58, 166, 185, 1);
+
+  BaoCaoXe(
       {required this.rentedCars,
       required this.returnedCars,
       required this.purchasedCars,
@@ -217,18 +221,13 @@ class LineChartSample1 extends StatefulWidget {
 }
 
 class LineChartSample1State extends State<LineChartSample1> {
-  late bool isShowingMainData = false;
+  late bool isShowingMainData = true;
   late List<ChartData> rentedCars;
   late List<ChartData> returnedCars;
   late List<ChartData> purchasedCars;
   String _selectedYear = DateTime.now().year.toString();
 
-  @override
-  void initState() {
-    super.initState();
-    isShowingMainData = true;
-    _fetchChartData(_selectedYear);
-  }
+  late final Future<void> _futureRecentKHs = _fetchChartData(_selectedYear);
 
   Future<void> _fetchChartData(String year) async {
     try {
@@ -265,104 +264,101 @@ class LineChartSample1State extends State<LineChartSample1> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(30, 5, 30, 50),
-      child: AspectRatio(
-        aspectRatio: 1.23,
-        child: Stack(
-          children: <Widget>[
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedYear,
-                    onChanged: _onYearChanged,
-                    decoration: InputDecoration(
-                      labelText: 'Chọn năm',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: List.generate(10, (index) {
-                      String year = (DateTime.now().year - index).toString();
-                      return DropdownMenuItem(
-                        value: year,
-                        child: Text(year),
-                      );
-                    }),
-                  ),
-                ),
-                const SizedBox(
-                  height: 37,
-                ),
-                const Text(
-                  'Báo cáo Xe',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(
-                  height: 37,
-                ),
-                Expanded(
-                  child: Stack(
-                    alignment: Alignment.center,
+    return FutureBuilder(
+        future: _futureRecentKHs,
+        builder: (ctx, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          return Container(
+            padding: const EdgeInsets.fromLTRB(30, 5, 30, 50),
+            child: AspectRatio(
+              aspectRatio: 1.23,
+              child: Stack(
+                children: <Widget>[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      _LineChart(
-                        isShowingMainData: isShowingMainData,
-                        rentedCars: rentedCars,
-                        returnedCars: returnedCars,
-                        purchasedCars: purchasedCars,
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: DropdownButtonFormField<String>(
+                          value: _selectedYear,
+                          onChanged: _onYearChanged,
+                          decoration: const InputDecoration(
+                            labelText: 'Chọn năm',
+                            border: OutlineInputBorder(),
+                          ),
+                          items: List.generate(10, (index) {
+                            String year =
+                                (DateTime.now().year - index).toString();
+                            return DropdownMenuItem(
+                              value: year,
+                              child: Text(year),
+                            );
+                          }),
+                        ),
                       ),
-                      const Positioned(
-                        top: 8,
-                        right: 8,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      const SizedBox(
+                        height: 37,
+                      ),
+                      Expanded(
+                        child: Stack(
+                          alignment: Alignment.center,
                           children: <Widget>[
-                            Indicator(
-                              color: Color.fromRGBO(58, 166, 185, 1),
-                              text: 'Số xe mượn',
-                              isSquare: true,
+                            BaoCaoXe(
+                              isShowingMainData: isShowingMainData,
+                              rentedCars: rentedCars,
+                              returnedCars: returnedCars,
+                              purchasedCars: purchasedCars,
                             ),
-                            SizedBox(
-                              height: 4,
-                            ),
-                            Indicator(
-                              color: Color.fromARGB(255, 252, 252, 118),
-                              text: 'Số xe trả',
-                              isSquare: true,
-                            ),
-                            SizedBox(
-                              height: 4,
-                            ),
-                            Indicator(
-                              color: Color.fromRGBO(255, 208, 208, 1),
-                              text: 'Số xe đã mua',
-                              isSquare: true,
-                            ),
-                            SizedBox(
-                              height: 18,
+                            const Positioned(
+                              top: 8,
+                              right: 8,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Indicator(
+                                    color: Color.fromRGBO(58, 166, 185, 1),
+                                    text: 'Số xe mượn',
+                                    isSquare: true,
+                                  ),
+                                  SizedBox(
+                                    height: 4,
+                                  ),
+                                  Indicator(
+                                    color: Color.fromARGB(255, 252, 252, 118),
+                                    text: 'Số xe trả',
+                                    isSquare: true,
+                                  ),
+                                  SizedBox(
+                                    height: 4,
+                                  ),
+                                  Indicator(
+                                    color: Color.fromRGBO(255, 208, 208, 1),
+                                    text: 'Số xe đã mua',
+                                    isSquare: true,
+                                  ),
+                                  SizedBox(
+                                    height: 18,
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
+
+                          // Add more legend items as needed
                         ),
                       ),
                     ],
-
-                    // Add more legend items as needed
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ],
-        ),
-      ),
-    );
+          );
+        });
   }
 
   Widget _buildLegendItem(String title, Color color) {
