@@ -21,7 +21,7 @@ class _LineChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LineChart(
-      isShowingMainData ? sampleData1 : sampleData1,
+      sampleData1,
       duration: const Duration(milliseconds: 250),
     );
   }
@@ -41,8 +41,8 @@ class _LineChart extends StatelessWidget {
   LineTouchData get lineTouchData1 => LineTouchData(
         handleBuiltInTouches: true,
         touchTooltipData: LineTouchTooltipData(
-          tooltipBgColor: Colors.blueGrey.withOpacity(0.2),
-        ),
+            tooltipBgColor: Colors.blueGrey.withOpacity(0.2),
+            tooltipBorder: const BorderSide(width: 1, color: Colors.black)),
       );
 
   FlTitlesData get titlesData1 => FlTitlesData(
@@ -62,8 +62,10 @@ class _LineChart extends StatelessWidget {
 
   List<LineChartBarData> get lineBarsData1 => [
         _generateLineChartBarData(rentedCars, Color.fromRGBO(58, 166, 185, 1)),
-        _generateLineChartBarData(returnedCars, Color.fromARGB(255, 252, 252, 118)),
-        _generateLineChartBarData(purchasedCars,Color.fromRGBO(255, 208, 208, 1))
+        _generateLineChartBarData(
+            returnedCars, Color.fromARGB(255, 252, 252, 118)),
+        _generateLineChartBarData(
+            purchasedCars, Color.fromRGBO(255, 208, 208, 1))
       ];
 
   LineTouchData get lineTouchData2 => const LineTouchData(
@@ -215,7 +217,7 @@ class LineChartSample1 extends StatefulWidget {
 }
 
 class LineChartSample1State extends State<LineChartSample1> {
-  late bool isShowingMainData;
+  late bool isShowingMainData = false;
   late List<ChartData> rentedCars;
   late List<ChartData> returnedCars;
   late List<ChartData> purchasedCars;
@@ -260,126 +262,126 @@ class LineChartSample1State extends State<LineChartSample1> {
       });
     }
   }
-@override
-Widget build(BuildContext context) {
-  return AspectRatio(
-    aspectRatio: 1.23,
-    child: Stack(
-      children: <Widget>[
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: DropdownButtonFormField<String>(
-                value: _selectedYear,
-                onChanged: _onYearChanged,
-                decoration: InputDecoration(
-                  labelText: 'Chọn năm',
-                  border: OutlineInputBorder(),
-                ),
-                items: List.generate(10, (index) {
-                  String year = (DateTime.now().year - index).toString();
-                  return DropdownMenuItem(
-                    value: year,
-                    child: Text(year),
-                  );
-                }),
-              ),
-            ),
-            const SizedBox(
-              height: 37,
-            ),
-            const Text(
-              'Báo cáo Xe',
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 2,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(
-              height: 37,
-            ),
-            Expanded(
-              child: Stack(
-                alignment: Alignment.center,
-                children: <Widget>[
-                  _LineChart(
-                    isShowingMainData: isShowingMainData,
-                    rentedCars: rentedCars,
-                    returnedCars: returnedCars,
-                    purchasedCars: purchasedCars,
-                  ),
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: 
-                       Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-            
-              Indicator(
-                color: const Color.fromRGBO(58, 166, 185, 1),
-                text: 'Số xe mượn',
-                isSquare: true,
-              ),
-              SizedBox(
-                height: 4,
-              ),
-              Indicator(
-                color: Color.fromARGB(255, 252, 252, 118),
-                text: 'Số xe trả',
-                isSquare: true,
-              ),
-              SizedBox(
-                height: 4,
-              ),
-              Indicator(
-                color:Color.fromRGBO(255, 208, 208, 1),
-                text: 'Số xe đã mua',
-                isSquare: true,
-              ),
-              
-              SizedBox(
-                height: 18,
-              ),
-            ],
-          ),
-          ),
-          ],
-              
-                        // Add more legend items as needed
-                      
-                    ),
-                  ),
-                ],
-            ),],
-  ),
-  
-        );
-     
-}
 
-Widget _buildLegendItem(String title, Color color) {
-  return Row(
-    mainAxisSize: MainAxisSize.min, // Giữ kích thước tối thiểu để không kéo dài quá chiều ngang
-    children: <Widget>[
-      Container(
-        width: 16,
-        height: 16,
-        color: color,
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(20),
+      child: AspectRatio(
+        aspectRatio: 1.23,
+        child: Stack(
+          children: <Widget>[
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DropdownButtonFormField<String>(
+                    value: _selectedYear,
+                    onChanged: _onYearChanged,
+                    decoration: InputDecoration(
+                      labelText: 'Chọn năm',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: List.generate(10, (index) {
+                      String year = (DateTime.now().year - index).toString();
+                      return DropdownMenuItem(
+                        value: year,
+                        child: Text(year),
+                      );
+                    }),
+                  ),
+                ),
+                const SizedBox(
+                  height: 37,
+                ),
+                const Text(
+                  'Báo cáo Xe',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 2,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(
+                  height: 37,
+                ),
+                Expanded(
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: <Widget>[
+                      _LineChart(
+                        isShowingMainData: isShowingMainData,
+                        rentedCars: rentedCars,
+                        returnedCars: returnedCars,
+                        purchasedCars: purchasedCars,
+                      ),
+                      const Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Indicator(
+                              color: Color.fromRGBO(58, 166, 185, 1),
+                              text: 'Số xe mượn',
+                              isSquare: true,
+                            ),
+                            SizedBox(
+                              height: 4,
+                            ),
+                            Indicator(
+                              color: Color.fromARGB(255, 252, 252, 118),
+                              text: 'Số xe trả',
+                              isSquare: true,
+                            ),
+                            SizedBox(
+                              height: 4,
+                            ),
+                            Indicator(
+                              color: Color.fromRGBO(255, 208, 208, 1),
+                              text: 'Số xe đã mua',
+                              isSquare: true,
+                            ),
+                            SizedBox(
+                              height: 18,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+
+                    // Add more legend items as needed
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
-      SizedBox(width: 8), // Khoảng cách giữa ô màu và văn bản
-      Text(
-        title,
-        style: TextStyle(fontSize: 14),
-      ),
-      SizedBox(width: 8),
-    ],
-  );
-}
+    );
+  }
+
+  Widget _buildLegendItem(String title, Color color) {
+    return Row(
+      mainAxisSize: MainAxisSize
+          .min, // Giữ kích thước tối thiểu để không kéo dài quá chiều ngang
+      children: <Widget>[
+        Container(
+          width: 16,
+          height: 16,
+          color: color,
+        ),
+        SizedBox(width: 8), // Khoảng cách giữa ô màu và văn bản
+        Text(
+          title,
+          style: TextStyle(fontSize: 14),
+        ),
+        SizedBox(width: 8),
+      ],
+    );
+  }
 }
