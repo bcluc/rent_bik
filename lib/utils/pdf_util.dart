@@ -201,7 +201,7 @@ class PdfApi {
                         style: pw.TextStyle(font: nunitoItalicFont),
                       ),
                       pw.Text(
-                        'Trong trường hợp vượt quá hạn trả, cửa hàng sẽ thu phí 100/ngày/xe.',
+                        'Trong trường hợp vượt quá hạn trả, cửa hàng sẽ thu phí gấp đôi phí thuê tính theo ngày trễ hạn.',
                         style: pw.TextStyle(font: nunitoItalicFont),
                       )
                     ],
