@@ -175,7 +175,7 @@ class ReturnManageState extends State<ReturnManage> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        _maKH,
+                        _hoTen,
                         style: const TextStyle(
                           fontSize: 16,
                         ),
@@ -212,7 +212,7 @@ class ReturnManageState extends State<ReturnManage> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        _hoTen,
+                        _maKH,
                         style: const TextStyle(
                           fontSize: 16,
                         ),
