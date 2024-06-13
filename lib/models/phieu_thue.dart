@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:rent_bik/utils/common_variables.dart';
 
 class PhieuThue {

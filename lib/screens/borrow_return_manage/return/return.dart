@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:rent_bik/dto/ket_qua_tra_phieu_dto.dart';
 import 'package:rent_bik/dto/phieu_thue_can_tra_dto.dart';
 import 'package:rent_bik/main.dart';
-import 'package:rent_bik/screens/borrow_return/return/return_billing_section.dart';
+import 'package:rent_bik/screens/borrow_return_manage/return/return_billing_section.dart';
 import 'package:rent_bik/utils/common_variables.dart';
 import 'package:rent_bik/utils/extesion.dart';
 
@@ -438,18 +439,6 @@ class ReturnManageState extends State<ReturnManage> {
                                                   ),
                                                 );
                                               }),
-                                            ),
-                                            Expanded(
-                                              flex: 3,
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                  horizontal: 15,
-                                                ),
-                                                child: Text(
-                                                  _phieuThues[index].bienSoXe,
-                                                ),
-                                              ),
                                             ),
                                             Expanded(
                                               flex: 3,

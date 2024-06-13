@@ -1,7 +1,10 @@
+import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:rent_bik/components/inform_dialog.dart';
+import 'package:rent_bik/dto/phieu_tra_dto.dart';
 import 'package:rent_bik/main.dart';
+import 'package:rent_bik/utils/common_variables.dart';
 import 'package:rent_bik/utils/extesion.dart';
 
 class TraPhieuThueSection extends StatefulWidget {
@@ -25,13 +28,32 @@ class _TraPhieuThueSectionState extends State<TraPhieuThueSection> {
   final _soTienController = TextEditingController();
   final _soHanhTrinhController = TextEditingController();
   final _ghiChuController = TextEditingController();
+  int _soTienThue = 0;
+
+  Future<void> _getSoTienThue() async {
+    if (widget.maPhieuThue == null) {
+      showDialog(
+        context: context,
+        builder: (ctx) =>
+            const InformDialog(content: 'Bạn chưa chọn Mã Phiếu thuê'),
+      );
+
+      return;
+    }
+    int res = await dbProcess.kiemTraTienPhieuThue(
+        widget.maPhieuThue!, _ngayThanhToanController.text);
+    setState(() {
+      _soTienThue = res;
+    });
+    return;
+  }
 
   Future<void> openDatePicker(BuildContext context) async {
     DateTime? chosenDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(1950),
-      lastDate: DateTime.now(),
+      lastDate: DateTime.now().addYears(2),
     );
     if (chosenDate != null) {
       setState(() {
@@ -55,15 +77,7 @@ class _TraPhieuThueSectionState extends State<TraPhieuThueSection> {
 
       return;
     }
-    if (_soTienController.text == '') {
-      showDialog(
-        context: context,
-        builder: (ctx) =>
-            const InformDialog(content: 'Bạn chưa nhập số tiền thuê'),
-      );
 
-      return;
-    }
     if (_soHanhTrinhController.text == '') {
       showDialog(
         context: context,
@@ -74,12 +88,17 @@ class _TraPhieuThueSectionState extends State<TraPhieuThueSection> {
       return;
     }
 
+    final PhieuTraDTO phieuTra = PhieuTraDTO(
+        maPhieuThue: widget.maPhieuThue!,
+        phiPhat: _soTienController.text == ''
+            ? null
+            : int.parse(_soTienController.text),
+        ngayTra: vnDateFormat.parse(_ngayThanhToanController.text),
+        soHanhTrinhMoi: int.parse(_soHanhTrinhController.text),
+        note: _ghiChuController.text);
+
     /* Cập nhật Trạng thái Cuốn sách = 'Có Sẵn' */
-    dbProcess.kiemTraTienPhieuThue(
-        widget.maPhieuThue!,
-        _ngayThanhToanController.text,
-        int.parse(_soTienController.text),
-        _ghiChuController.text);
+    dbProcess.insertPhieuTra(phieuTra);
 
     /* Gọi phương thức từ Widget cha là TraSach để xử lý xóa phiếu mượn và trả */
     widget.onTra();
@@ -225,7 +244,7 @@ class _TraPhieuThueSectionState extends State<TraPhieuThueSection> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Số tiền thuê',
+                            'Số tiền phạt',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -238,7 +257,7 @@ class _TraPhieuThueSectionState extends State<TraPhieuThueSection> {
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: Colors.white,
-                              hintText: "Nhập số tiền thanh toán",
+                              hintText: "Nhập tiền phạt (Không bắt buộc)",
                               hintStyle:
                                   const TextStyle(color: Color(0xFF888888)),
                               border: OutlineInputBorder(
@@ -268,7 +287,7 @@ class _TraPhieuThueSectionState extends State<TraPhieuThueSection> {
                           ),
                           const SizedBox(height: 4),
                           TextFormField(
-                            controller: _soTienController,
+                            controller: _soHanhTrinhController,
                             enabled: true,
                             decoration: InputDecoration(
                               filled: true,
@@ -291,55 +310,91 @@ class _TraPhieuThueSectionState extends State<TraPhieuThueSection> {
                   ],
                 ),
                 const Gap(5),
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Ghi chú',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      TextFormField(
-                        controller: _soTienController,
-                        enabled: true,
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.white,
-                          hintText: "Nhập ghi chú tại đây",
-                          hintStyle: const TextStyle(color: Color(0xFF888888)),
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius: BorderRadius.circular(8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Ghi chú',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                           ),
-                          contentPadding: const EdgeInsets.all(14),
-                          isCollapsed: true,
-                          errorMaxLines: 2,
-                        ),
+                          const SizedBox(height: 4),
+                          TextFormField(
+                            controller: _ghiChuController,
+                            enabled: true,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.white,
+                              hintText: "Nhập ghi chú tại đây (Không bắt buộc)",
+                              hintStyle:
+                                  const TextStyle(color: Color(0xFF888888)),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              contentPadding: const EdgeInsets.all(14),
+                              isCollapsed: true,
+                              errorMaxLines: 2,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
                 const Gap(20),
-                FilledButton(
-                  onPressed: () => _savePhieuTra(),
-                  style: FilledButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                Row(
+                  children: [
+                    Text(
+                      'TỔNG TIỀN THUÊ: $_soTienThue',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 20,
-                      horizontal: 30,
+                    const Spacer(),
+                    FilledButton(
+                      onPressed: () => _getSoTienThue(),
+                      style: FilledButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 20,
+                          horizontal: 30,
+                        ),
+                      ),
+                      child: const Text(
+                        'Kiểm tra tiền thuê',
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                  ),
-                  child: const Text(
-                    'Lưu phiếu',
-                    textAlign: TextAlign.center,
-                  ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    FilledButton(
+                      onPressed: () => _savePhieuTra(),
+                      style: FilledButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 20,
+                          horizontal: 30,
+                        ),
+                      ),
+                      child: const Text(
+                        'Lưu phiếu',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
                 ),
                 const Gap(20),
               ],

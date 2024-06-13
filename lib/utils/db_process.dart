@@ -6,6 +6,8 @@ import 'package:rent_bik/dto/khach_hang_dto.dart';
 import 'package:rent_bik/dto/phieu_bao_tri_can_tra_dto.dart';
 import 'package:rent_bik/dto/phieu_thue_can_tra_dto.dart';
 import 'package:rent_bik/dto/phieu_thue_dto.dart';
+import 'package:rent_bik/dto/phieu_tra_dto.dart';
+import 'package:rent_bik/dto/thong_tin_khach_hang_dto.dart';
 import 'package:rent_bik/dto/xe_dto.dart';
 import 'package:rent_bik/models/bao_hiem_xe.dart';
 import 'package:rent_bik/models/dong_xe.dart';
@@ -13,6 +15,7 @@ import 'package:rent_bik/models/hang_xe.dart';
 import 'package:rent_bik/models/khach_hang.dart';
 import 'package:rent_bik/models/phieu_bao_tri.dart';
 import 'package:rent_bik/models/phieu_thue.dart';
+import 'package:rent_bik/models/phieu_tra.dart';
 import 'package:rent_bik/utils/extesion.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:http/http.dart' as http;
@@ -952,22 +955,18 @@ class DbProcess {
     return newMaPT;
   }
 
-  Future<KetQuaTraPhieuDTO?> kiemTraTienPhieuThue(
-      int maPhieuThue, String ngayTra, int? phiPhat, String? note) async {
-    late KetQuaTraPhieuDTO newMaPT;
+  Future<int> kiemTraTienPhieuThue(int maPhieuThue, String ngayTra) async {
+    int newMaPT = 0;
     final response = await http.post(
       Uri.parse('$_baseUrl/add_PhieuTra.php'),
       body: jsonEncode(<String, Object?>{
         "MaPhieuThue": maPhieuThue,
         "NgayTra": ngayTra,
         // Có thể thêm note, phí phạt nếu trường hợp xe phụ thu các phí khác như xe hỏng, mất phụ kiên,vv trừ trường hợp quá ngày sẽ tự động tính
-        "PhiPhat": phiPhat.toString(),
-        "Note": note
       }),
     );
     if (response.statusCode == 200) {
-      newMaPT =
-          KetQuaTraPhieuDTO.fromJson(json.decode(response.body)['MaPhieuTra']);
+      newMaPT = json.decode(response.body)["SoTienThue"];
     } else {
       // Handle error if needed
     }
@@ -982,6 +981,26 @@ class DbProcess {
 
     /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
     final response = await http.get(Uri.parse('$_baseUrl/get_PhieuThue.php')
+        .replace(queryParameters: {'CCCD': str}));
+    if (response.statusCode == 200) {
+      //print(response.body);
+      List<dynamic> jsonData = json.decode(response.body)['PhieuThues'];
+      danhSachPhieuBaoTri =
+          jsonData.map((data) => PhieuThueCanTraDTO.fromJson(data)).toList();
+    } else {
+      // Handle error if needed
+    }
+    return danhSachPhieuBaoTri;
+  }
+
+  Future<List<PhieuThueCanTraDTO>> queryAllPhieuThueWithCccd({
+    required String str,
+  }) async {
+    /* Lấy 10 dòng dữ liệu Độc Giả được thêm gần đây */
+    List<PhieuThueCanTraDTO> danhSachPhieuBaoTri = [];
+
+    /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
+    final response = await http.get(Uri.parse('$_baseUrl/get_PhieuThue_all.php')
         .replace(queryParameters: {'CCCD': str}));
     if (response.statusCode == 200) {
       //print(response.body);
@@ -1009,5 +1028,66 @@ class DbProcess {
       // Handle error if needed
     }
     return hoTen;
+  }
+
+  Future<int> insertPhieuTra(PhieuTraDTO newPhieuTra) async {
+    int newMaPT = 0;
+    final response = await http.post(
+      Uri.parse('$_baseUrl/add_PhieuTra.php'),
+      body: jsonEncode(<String, Object?>{
+        "MaPhieuThue": newPhieuTra.maPhieuThue,
+        "NgayTra": newPhieuTra.ngayTra.toVnFormat(),
+        "SoHanhTrinhMoi": newPhieuTra.soHanhTrinhMoi.toString(),
+        // Có thể thêm note, phí phạt nếu trường hợp xe phụ thu các phí khác như xe hỏng, mất phụ kiên,vv trừ trường hợp quá ngày sẽ tự động tính
+        "PhiPhat": newPhieuTra.phiPhat.toString(),
+        "Note": newPhieuTra.note
+      }),
+    );
+    if (response.statusCode == 200) {
+      newMaPT = int.parse(json.decode(response.body)['MaPhieuTra']);
+    } else {
+      // Handle error if needed
+    }
+    return newMaPT;
+  }
+
+  Future<List<PhieuTra>> queryPhieuTraWithCccd({
+    required String str,
+  }) async {
+    /* Lấy 10 dòng dữ liệu Độc Giả được thêm gần đây */
+    List<PhieuTra> danhSachPhieuBaoTri = [];
+
+    /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
+    final response = await http.get(Uri.parse('$_baseUrl/get_PhieuTra.php')
+        .replace(queryParameters: {'CCCD': str}));
+    if (response.statusCode == 200) {
+      //print(response.body);
+      List<dynamic> jsonData = json.decode(response.body)['PhieuTras'];
+      danhSachPhieuBaoTri =
+          jsonData.map((data) => PhieuTra.fromJson(data)).toList();
+    } else {
+      // Handle error if needed
+    }
+    return danhSachPhieuBaoTri;
+  }
+
+  Future<TTKhachHangDTO?> queryTTKHWithCccd({
+    required String str,
+  }) async {
+    /* Lấy 10 dòng dữ liệu Độc Giả được thêm gần đây */
+    late TTKhachHangDTO? phieuThue;
+
+    /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
+    final response = await http.get(Uri.parse('$_baseUrl/get_PhieuTra.php')
+        .replace(queryParameters: {'CCCD': str}));
+    if (response.statusCode == 200) {
+      //print(response.body);
+      String hoTen = json.decode(response.body)['HoTen'];
+      String sdt = json.decode(response.body)['SDT'];
+      phieuThue = TTKhachHangDTO(hoTen: hoTen, sdt: sdt);
+    } else {
+      // Handle error if needed
+    }
+    return phieuThue;
   }
 }

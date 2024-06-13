@@ -12,7 +12,7 @@ import 'package:rent_bik/dto/phieu_thue_dto.dart';
 import 'package:rent_bik/dto/xe_dto.dart';
 import 'package:rent_bik/main.dart';
 import 'package:rent_bik/models/phieu_thue.dart';
-import 'package:rent_bik/screens/borrow_return/borrow/xuat_phieu_thue_switch.dart';
+import 'package:rent_bik/screens/borrow_return_manage/borrow/xuat_phieu_thue_switch.dart';
 import 'package:rent_bik/utils/common_variables.dart';
 import 'package:rent_bik/utils/extesion.dart';
 import 'package:rent_bik/utils/pdf_util.dart';
@@ -309,45 +309,18 @@ class _ThueXeState extends State<ThueXe> {
               ),
               const Gap(30),
               Expanded(
-                child: LabelTextFormField(
+                child: LabelTextFieldDatePicker(
                   labelText: 'Ngày trả',
                   controller: _ngayTraController,
-                  isEnable: false,
                 ),
               ),
+              const Gap(30),
               Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Số tiền cọc',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    TextFormField(
-                      controller: _tienCocController,
-                      enabled: true,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        hintText: "Nhập số tiền cọc",
-                        hintStyle: const TextStyle(color: Color(0xFF888888)),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        contentPadding: const EdgeInsets.all(14),
-                        isCollapsed: true,
-                        errorMaxLines: 2,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                  child: LabelTextFormField(
+                labelText: 'Số tiền cọc',
+                hint: "Nhập tiền cọc",
+                controller: _ngayTraController,
+              )),
             ],
           ),
           const Gap(10),

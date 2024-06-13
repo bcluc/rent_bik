@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:rent_bik/screens/borrow_return/borrow/borrow.dart';
-import 'package:rent_bik/screens/borrow_return/return/return.dart';
+import 'package:rent_bik/screens/borrow_return_manage/borrow/borrow.dart';
+import 'package:rent_bik/screens/borrow_return_manage/list/borrow_return_list.dart';
+import 'package:rent_bik/screens/borrow_return_manage/return/return.dart';
 
 class BorrowReturnManage extends StatefulWidget {
   const BorrowReturnManage({super.key});
@@ -80,7 +81,7 @@ class _BorrowReturnManageState extends State<BorrowReturnManage>
           Expanded(
             child: TabBarView(
               controller: tabController,
-              children: const [ThueXe(), ReturnManage(), ThueXe()],
+              children: const [ThueXe(), ReturnManage(), QuanLyMuonTra()],
             ),
           ),
         ],
