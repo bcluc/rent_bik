@@ -162,7 +162,18 @@ class _ThueXeState extends State<ThueXe> {
     );
 
     /* Không cần await cũng được */
-    await dbProcess.insertPhieuThue(phieuThue);
+    int res = await dbProcess.insertPhieuThue(phieuThue);
+
+    if (res == -1) {
+      showDialog(
+        // ignore: use_build_context_synchronously
+        context: context,
+        builder: (ctx) =>
+            const InformDialog(content: 'Phiếu thuê không hợp lệ'),
+      );
+
+      return;
+    }
 
     await Future.delayed(const Duration(milliseconds: 200));
 

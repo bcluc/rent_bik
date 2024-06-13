@@ -149,10 +149,6 @@ class PdfApi {
                             style: nunitoRegularTextStyle,
                           ),
                         ),
-                        pw.Expanded(
-                          flex: 1,
-                          child: pw.SizedBox(),
-                        ),
                       ],
                     ),
                   ],

@@ -936,7 +936,7 @@ class DbProcess {
   }
 
   Future<int> insertPhieuThue(PhieuThueDTO newPhieuThue) async {
-    int newMaPT = 0;
+    int? newMaPT = -1;
     final response = await http.post(
       Uri.parse('$_baseUrl/add_PhieuThue.php'),
       body: jsonEncode(<String, String?>{
@@ -948,7 +948,8 @@ class DbProcess {
       }),
     );
     if (response.statusCode == 200) {
-      newMaPT = int.parse(json.decode(response.body)['MaPhieuThue']);
+      newMaPT = json.decode(response.body)['MaPhieuThue'];
+      if (newMaPT == null) newMaPT = -1;
     } else {
       // Handle error if needed
     }

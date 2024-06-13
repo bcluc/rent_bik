@@ -266,7 +266,7 @@ class LineChartSample1State extends State<LineChartSample1> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(30, 5, 30, 50),
       child: AspectRatio(
         aspectRatio: 1.23,
         child: Stack(
