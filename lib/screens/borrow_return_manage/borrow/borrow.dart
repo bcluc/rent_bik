@@ -305,6 +305,7 @@ class _ThueXeState extends State<ThueXe> {
                 child: LabelTextFieldDatePicker(
                   labelText: 'Ngày mượn',
                   controller: _ngayMuonController,
+                  lastDate: DateTime.now().addYears(3),
                 ),
               ),
               const Gap(30),
@@ -312,6 +313,7 @@ class _ThueXeState extends State<ThueXe> {
                 child: LabelTextFieldDatePicker(
                   labelText: 'Ngày trả',
                   controller: _ngayTraController,
+                  lastDate: DateTime.now().addYears(3),
                 ),
               ),
               const Gap(30),
@@ -319,7 +321,7 @@ class _ThueXeState extends State<ThueXe> {
                   child: LabelTextFormField(
                 labelText: 'Số tiền cọc',
                 hint: "Nhập tiền cọc",
-                controller: _ngayTraController,
+                controller: _tienCocController,
               )),
             ],
           ),
@@ -687,7 +689,7 @@ class _ThueXeState extends State<ThueXe> {
                 Row(
                   children: [
                     Text(
-                      "XE ĐÃ CHỌN $_bienSoXeThue",
+                      "XE ĐÃ CHỌN: $_bienSoXeThue",
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 16,
