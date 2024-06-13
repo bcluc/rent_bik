@@ -3,7 +3,6 @@ import 'package:gap/gap.dart';
 import 'package:rent_bik/components/my_search_bar.dart';
 import 'package:rent_bik/dto/xe_dto.dart';
 import 'package:rent_bik/main.dart';
-import 'package:rent_bik/models/xe.dart';
 import 'package:rent_bik/screens/bike_manage/bike_add/add_edit_bike_form.dart';
 import 'package:rent_bik/utils/common_variables.dart';
 import 'package:rent_bik/utils/extesion.dart';

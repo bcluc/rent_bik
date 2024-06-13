@@ -1,27 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:rent_bik/dto/bao_hiem_xe_dto.dart';
-import 'package:rent_bik/dto/bao_hiem_xe_new_dto.dart';
+import 'package:rent_bik/dto/xe_dto.dart';
 import 'package:rent_bik/main.dart';
-import 'package:rent_bik/screens/bike_manage/insurance_manage/buy_insurance_section.dart';
+import 'package:rent_bik/screens/maintance_manage/maintance_add/add_maintance_section.dart';
 import 'package:rent_bik/utils/common_variables.dart';
-import 'package:rent_bik/utils/extesion.dart';
 
-class BaoHiemSpect extends StatefulWidget {
-  const BaoHiemSpect({super.key});
+class PhieuBaoTriSpect extends StatefulWidget {
+  const PhieuBaoTriSpect({super.key});
 
   @override
-  State<BaoHiemSpect> createState() => _BaoHiemSpectState();
+  State<PhieuBaoTriSpect> createState() => _PhieuBaoTriSpectState();
 }
 
-class _BaoHiemSpectState extends State<BaoHiemSpect> {
+class _PhieuBaoTriSpectState extends State<PhieuBaoTriSpect> {
   final _searchBSXController = TextEditingController();
 
   String _errorText = '';
   String _soBaoHiemXe = '';
-  String _ngayHetHan = '';
-  String _ngayMua = '';
-  int _maXe = -1;
+  String _hangXe = '';
+  String _dongXe = '';
   String _bienSoXe = '';
 
   bool _isProcessingBSX = false;
@@ -41,34 +38,23 @@ class _BaoHiemSpectState extends State<BaoHiemSpect> {
       _isProcessingBSX = true;
     });
 
-    _ngayHetHan = '';
-    _ngayMua = '';
-
+    _hangXe = '';
+    _dongXe = '';
     _soBaoHiemXe = '';
-    _maXe = -1;
     _bienSoXe = '';
 
     String bienSoXe = _searchBSXController.text;
 
-    String? resGetBHX = await dbProcess.queryStatusBHXWithBSX(bienSoXe);
+    String? resGetBHX = await dbProcess.getStatusXeWithBSX(bienSoXe);
     await Future.delayed(const Duration(milliseconds: 200));
 
     if (resGetBHX == 'success') {
-      BaoHiemXeDTO bhx =
-          await dbProcess.queryBaoHiemXeFullnameWithBSX(str: bienSoXe);
+      _bienSoXe = bienSoXe;
+      XeDTO xe = await dbProcess.getXeWithString(str: bienSoXe);
       await Future.delayed(const Duration(milliseconds: 200));
-      _soBaoHiemXe = bhx.soBHX.toString();
-      _ngayHetHan = bhx.ngayHetHan.toVnFormat();
-      _ngayMua = bhx.ngayMua.toVnFormat();
-      _maXe = bhx.maXe;
-      _bienSoXe = bhx.bienSoXe;
-    } else if (resGetBHX == "submit") {
-      _errorText = 'Xe chưa có bảo hiểm.';
-      BaoHiemXeNewDTO bhxNew =
-          await dbProcess.queryNewBaoHiemXeSubmitedWithBSX(str: bienSoXe);
-      await Future.delayed(const Duration(milliseconds: 200));
-      _bienSoXe = bhxNew.bienSoXe;
-      _maXe = bhxNew.maXe;
+      _soBaoHiemXe = xe.soBHX.toString();
+      _hangXe = xe.hangXes.last.tenHangXe;
+      _dongXe = xe.dongXes.last.tenDongXe;
     } else {
       _errorText = 'Không tìm thấy Xe.';
     }
@@ -92,7 +78,7 @@ class _BaoHiemSpectState extends State<BaoHiemSpect> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'TRA CỨU BẢO HIỂM XE',
+            'TRA CỨU THÔNG TIN XE',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
@@ -208,7 +194,7 @@ class _BaoHiemSpectState extends State<BaoHiemSpect> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Ngày hết hạn:',
+                      'Hãng xe:',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -220,7 +206,7 @@ class _BaoHiemSpectState extends State<BaoHiemSpect> {
                       alignment: Alignment.centerLeft,
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       decoration: BoxDecoration(
-                        color: _ngayHetHan.isEmpty
+                        color: _hangXe.isEmpty
                             ? const Color(0xffEFEFEF)
                             : Theme.of(context)
                                 .colorScheme
@@ -229,7 +215,44 @@ class _BaoHiemSpectState extends State<BaoHiemSpect> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        _ngayHetHan,
+                        _hangXe,
+                        style: const TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Gap(50),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Dòng xe:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Container(
+                      height: 44,
+                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      decoration: BoxDecoration(
+                        color: _dongXe.isEmpty
+                            ? const Color(0xffEFEFEF)
+                            : Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        _dongXe,
                         style: const TextStyle(
                           fontSize: 16,
                         ),
@@ -247,26 +270,13 @@ class _BaoHiemSpectState extends State<BaoHiemSpect> {
                     child: CircularProgressIndicator(),
                   ),
                 )
-              : _bienSoXe.isEmpty
-                  ? Text(
-                      _errorText.isEmpty
-                          ? 'Bạn cần nhập biển số xe để tra cứu'
-                          : _errorText,
-                      style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        fontSize: 16,
-                        color: _errorText.isEmpty
-                            ? null
-                            : Theme.of(context).colorScheme.error,
-                      ),
-                    )
-                  : const Text(
-                      '',
-                      style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        fontSize: 16,
-                      ),
-                    ),
+              : const Text(
+                  '',
+                  style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    fontSize: 16,
+                  ),
+                ),
           _isProcessingBSX
               ? const Text(
                   '',
@@ -275,15 +285,8 @@ class _BaoHiemSpectState extends State<BaoHiemSpect> {
                     fontSize: 16,
                   ),
                 )
-              : BuyInsuranceSection(
-                  onAdd: () => setState(() {}),
-                  soBHX: _soBaoHiemXe == "" ? null : _soBaoHiemXe,
-                  maXe: _maXe == -1 ? null : _maXe,
+              : AddMaintanceSection(
                   bienSoXe: _bienSoXe,
-                  ngayHetHan: _ngayHetHan == ''
-                      ? null
-                      : vnDateFormat.parse(_ngayHetHan),
-                  ngayMua: _ngayMua == '' ? null : vnDateFormat.parse(_ngayMua),
                 )
         ],
       ),

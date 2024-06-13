@@ -293,9 +293,11 @@ class _CustomerManageState extends State<CustomerManage> {
                     Logic xử lý _logicEditKH xem ở phần khai báo bên trên
                     */
                     IconButton.filled(
-                      onPressed: () {
-                        _selectedRow == -1 ? null : _logicEditKH();
-                      },
+                      onPressed: _selectedRow == -1
+                          ? null
+                          : () {
+                              _logicEditKH();
+                            },
                       icon: const Icon(Icons.edit),
                       style: myIconButtonStyle,
                     ),

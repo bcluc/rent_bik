@@ -1,49 +1,38 @@
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
-import 'package:rent_bik/components/label_text_form_field.dart';
 import 'package:rent_bik/components/label_text_form_field_date_picker.dart';
 import 'package:rent_bik/main.dart';
-import 'package:rent_bik/models/bao_hiem_xe.dart';
+import 'package:rent_bik/models/phieu_bao_tri.dart';
 import 'package:rent_bik/utils/common_variables.dart';
 import 'package:rent_bik/utils/extesion.dart';
 
-class EditBHXForm extends StatefulWidget {
-  const EditBHXForm({super.key, required this.editBaoHiemXe});
-  final BaoHiemXe editBaoHiemXe;
+class EditMaintanceForm extends StatefulWidget {
+  const EditMaintanceForm({super.key, required this.editPhieuBaoTri});
+
+  final PhieuBaoTri editPhieuBaoTri;
 
   @override
-  State<EditBHXForm> createState() => _EditBHXFormState();
+  State<EditMaintanceForm> createState() => _EditMaintanceFormState();
 }
 
-class _EditBHXFormState extends State<EditBHXForm> {
+class _EditMaintanceFormState extends State<EditMaintanceForm> {
   final _formKey = GlobalKey<FormState>();
   bool _isProcessing = false;
 
-  final _bhxNumberController = TextEditingController();
+  final _ngayBaoTriController = TextEditingController();
 
-  final _ngayMuaController = TextEditingController();
-
-  final _ngayHetHanController = TextEditingController();
-
-  final _soTienController = TextEditingController();
-
-  void saveBaoHiemXe(BuildContext context) async {
+  void savePhieuBT(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isProcessing = true;
       });
 
-      widget.editBaoHiemXe.ngayMua =
-          vnDateFormat.parse(_ngayMuaController.text);
-      widget.editBaoHiemXe.ngayHetHan =
-          vnDateFormat.parse(_ngayHetHanController.text);
-      widget.editBaoHiemXe.soBHX = _bhxNumberController.text;
-      widget.editBaoHiemXe.soTien = int.parse(_soTienController.text);
+      widget.editPhieuBaoTri.ngayBaoTri =
+          vnDateFormat.parse(_ngayBaoTriController.text);
 
-      await dbProcess.updateBaoHiemXe(widget.editBaoHiemXe);
+      await dbProcess.updatePhieuBaoTri(widget.editPhieuBaoTri);
 
       if (mounted) {
-        // ignore: use_build_context_synchronously
         Navigator.of(context).pop('updated');
       }
 
@@ -52,7 +41,6 @@ class _EditBHXFormState extends State<EditBHXForm> {
       });
 
       if (mounted) {
-        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Cập nhật thông tin thành công'),
@@ -68,31 +56,13 @@ class _EditBHXFormState extends State<EditBHXForm> {
   @override
   void initState() {
     super.initState();
-    //print(widget.editBaoHiemXe.toString());
-    /*
-    Nếu là chỉnh sửa khách hàng
-    thì phải fill thông tin vào của khách hàng cần chỉnh sửa vào form
-    */
-    _bhxNumberController.text = widget.editBaoHiemXe.soBHX;
-    // ignore: unnecessary_null_comparison
-    widget.editBaoHiemXe.ngayMua == null
-        ? _ngayMuaController.text = ""
-        : _ngayMuaController.text = widget.editBaoHiemXe.ngayMua.toVnFormat();
-    // ignore: unnecessary_null_comparison
-    widget.editBaoHiemXe.ngayHetHan == null
-        ? _ngayHetHanController.text = ""
-        : _ngayHetHanController.text =
-            widget.editBaoHiemXe.ngayHetHan.toVnFormat();
-    _soTienController.text = widget.editBaoHiemXe.soTien.toString();
+    _ngayBaoTriController.text = widget.editPhieuBaoTri.ngayBaoTri.toVnFormat();
   }
 
   @override
   void dispose() {
     /* dispose các controller để tránh lãng phí bộ nhớ */
-    _ngayMuaController.dispose();
-    _bhxNumberController.dispose();
-    _ngayHetHanController.dispose();
-    _soTienController.dispose();
+    _ngayBaoTriController.dispose();
     super.dispose();
   }
 
@@ -117,7 +87,7 @@ class _EditBHXFormState extends State<EditBHXForm> {
                 Row(
                   children: [
                     const Text(
-                      'SỬA THÔNG TIN BẢO HIỂM XE',
+                      'SỬA THÔNG TIN PHIẾU BẢO TRÌ',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -132,41 +102,22 @@ class _EditBHXFormState extends State<EditBHXForm> {
                 ),
                 const SizedBox(height: 10),
                 const Text(
-                  "Mã BHX",
+                  "Mã Phiếu bảo trì",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  widget.editBaoHiemXe.maBHX.toString(),
+                  widget.editPhieuBaoTri.maPhieuBaoTri.toString(),
                   style: const TextStyle(fontWeight: FontWeight.normal),
                 ),
-                const SizedBox(height: 10),
-                LabelTextFormField(
-                  labelText: 'Số bảo hiểm xe',
-                  controller: _bhxNumberController,
-                ),
-                //
-
-                const SizedBox(height: 10),
-                LabelTextFieldDatePicker(
-                  labelText: 'Ngày mua',
-                  controller: _ngayMuaController,
-                  initialDateInPicker: widget.editBaoHiemXe.ngayMua,
-                  lastDate: DateTime.now().addYears(10),
-                ),
-                const SizedBox(height: 10),
-
-                LabelTextFieldDatePicker(
-                  labelText: 'Ngày hết hạn',
-                  controller: _ngayHetHanController,
-                  initialDateInPicker: widget.editBaoHiemXe.ngayHetHan,
-                  lastDate: DateTime.now().addYears(10),
-                ),
                 //
                 const SizedBox(height: 10),
-                LabelTextFormField(
-                  labelText: 'Số tiền mua',
-                  controller: _soTienController,
+                LabelTextFieldDatePicker(
+                  labelText: 'Ngày bảo trì',
+                  controller: _ngayBaoTriController,
+                  firstDate: DateTime.now().subYears(2),
+                  initialDateInPicker: widget.editPhieuBaoTri.ngayBaoTri,
+                  lastDate: DateTime.now().addYears(2),
                 ),
                 //
                 const SizedBox(height: 50),
@@ -182,7 +133,7 @@ class _EditBHXFormState extends State<EditBHXForm> {
                           ),
                         )
                       : FilledButton(
-                          onPressed: () => saveBaoHiemXe(context),
+                          onPressed: () => savePhieuBT(context),
                           style: FilledButton.styleFrom(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),

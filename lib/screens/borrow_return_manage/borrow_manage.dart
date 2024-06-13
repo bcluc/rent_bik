@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:rent_bik/screens/maintance_manage/maintance_add/add_maintance.dart';
-import 'package:rent_bik/screens/maintance_manage/maintance_billing/maintance_billing.dart';
-import 'package:rent_bik/screens/maintance_manage/maintance_list/maintance_list.dart';
+import 'package:rent_bik/screens/borrow_return_manage/borrow/borrow.dart';
+import 'package:rent_bik/screens/borrow_return_manage/list/borrow_return_list.dart';
+import 'package:rent_bik/screens/borrow_return_manage/return/return.dart';
 
-class MaintanceManage extends StatefulWidget {
-  const MaintanceManage({super.key});
+class BorrowReturnManage extends StatefulWidget {
+  const BorrowReturnManage({super.key});
 
   @override
-  State<MaintanceManage> createState() => _MaintanceManageState();
+  State<BorrowReturnManage> createState() => _BorrowReturnManageState();
 }
 
-class _MaintanceManageState extends State<MaintanceManage>
+class _BorrowReturnManageState extends State<BorrowReturnManage>
     with TickerProviderStateMixin {
   late final TabController tabController;
 
@@ -49,9 +49,9 @@ class _MaintanceManageState extends State<MaintanceManage>
                 ),
                 controller: tabController,
                 tabs: const [
-                  Tab(text: "Bảo trì xe"),
-                  Tab(text: "Thanh toán bảo trì xe"),
-                  Tab(text: 'Phiếu bảo trì'),
+                  Tab(text: "Cho thuê xe"),
+                  Tab(text: "Nhận trả xe"),
+                  Tab(text: 'Phiếu thuê/trả'),
                 ],
                 indicator: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
@@ -81,11 +81,7 @@ class _MaintanceManageState extends State<MaintanceManage>
           Expanded(
             child: TabBarView(
               controller: tabController,
-              children: const [
-                PhieuBaoTriSpect(),
-                BillingMaintance(),
-                MaintainceList()
-              ],
+              children: const [ThueXe(), ReturnManage(), QuanLyMuonTra()],
             ),
           ),
         ],

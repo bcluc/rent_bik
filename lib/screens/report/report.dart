@@ -1,17 +1,18 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:rent_bik/screens/maintance_manage/maintance_add/add_maintance.dart';
-import 'package:rent_bik/screens/maintance_manage/maintance_billing/maintance_billing.dart';
-import 'package:rent_bik/screens/maintance_manage/maintance_list/maintance_list.dart';
+import 'package:rent_bik/screens/bike_manage/bike_warehouse/bike_warehouse.dart';
+import 'package:rent_bik/screens/report/customer_report.dart';
+import 'package:rent_bik/screens/report/bike_report.dart';
+import 'package:rent_bik/screens/report/income_report.dart';
 
-class MaintanceManage extends StatefulWidget {
-  const MaintanceManage({super.key});
+class Report extends StatefulWidget {
+  const Report({super.key});
 
   @override
-  State<MaintanceManage> createState() => _MaintanceManageState();
+  State<Report> createState() => _ReportState();
 }
 
-class _MaintanceManageState extends State<MaintanceManage>
-    with TickerProviderStateMixin {
+class _ReportState extends State<Report> with TickerProviderStateMixin {
   late final TabController tabController;
 
   @override
@@ -49,9 +50,9 @@ class _MaintanceManageState extends State<MaintanceManage>
                 ),
                 controller: tabController,
                 tabs: const [
-                  Tab(text: "Bảo trì xe"),
-                  Tab(text: "Thanh toán bảo trì xe"),
-                  Tab(text: 'Phiếu bảo trì'),
+                  Tab(text: "Báo cáo doanh thu"),
+                  Tab(text: "Báo cáo khách hàng"),
+                  Tab(text: 'Báo cáo xe'),
                 ],
                 indicator: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
@@ -82,9 +83,9 @@ class _MaintanceManageState extends State<MaintanceManage>
             child: TabBarView(
               controller: tabController,
               children: const [
-                PhieuBaoTriSpect(),
-                BillingMaintance(),
-                MaintainceList()
+                PieChartSample2(),
+                CustomerReport(),
+                LineChartSample1()
               ],
             ),
           ),
