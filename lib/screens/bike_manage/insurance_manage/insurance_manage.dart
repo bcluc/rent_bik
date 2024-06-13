@@ -258,9 +258,11 @@ class _InsuranceManageState extends State<InsuranceManage> {
                     Logic xử lý _logicEditKH xem ở phần khai báo bên trên
                     */
                     IconButton.filled(
-                      onPressed: () {
-                        _selectedRow == -1 ? null : _logicEditBHX();
-                      },
+                      onPressed: _selectedRow == -1
+                          ? null
+                          : () {
+                              _logicEditBHX();
+                            },
                       icon: const Icon(Icons.edit),
                       style: myIconButtonStyle,
                     ),

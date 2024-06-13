@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'package:rent_bik/dto/bao_hiem_xe_dto.dart';
 import 'package:rent_bik/dto/bao_hiem_xe_new_dto.dart';
+import 'package:rent_bik/dto/phieu_bao_tri_can_tra_dto.dart';
 import 'package:rent_bik/dto/xe_dto.dart';
 import 'package:rent_bik/models/bao_hiem_xe.dart';
 import 'package:rent_bik/models/dong_xe.dart';
 import 'package:rent_bik/models/hang_xe.dart';
 import 'package:rent_bik/models/khach_hang.dart';
+import 'package:rent_bik/models/phieu_bao_tri.dart';
 import 'package:rent_bik/utils/extesion.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:http/http.dart' as http;
@@ -273,6 +275,48 @@ class DbProcess {
       // Handle error if needed
     }
     return danhSachXe;
+  }
+
+  Future<XeDTO> getXeWithString({
+    required String str,
+  }) async {
+    /* Lấy 10 dòng dữ liệu Độc Giả được thêm gần đây */
+    late XeDTO xeGet;
+
+    /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
+    final response = await http.post(
+      Uri.parse('$_baseUrl/search_in_BaoTri.php'),
+      body: jsonEncode(<String, String>{
+        "BienSoXe": str,
+      }),
+    );
+    if (response.statusCode == 200) {
+      //print(response.body);
+      xeGet = XeDTO.fromJson(json.decode(response.body)['Xe']);
+    } else {
+      // Handle error if needed
+    }
+    return xeGet;
+  }
+
+  Future<String?> getStatusXeWithBSX(
+    String str,
+  ) async {
+    /* Lấy 10 dòng dữ liệu Độc Giả được thêm gần đây */
+    String? bhxGet = "error";
+
+    /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
+    final response = await http.post(
+      Uri.parse('$_baseUrl/search_in_BaoTri.php'),
+      body: jsonEncode(<String, String>{
+        "BienSoXe": str,
+      }),
+    );
+    if (response.statusCode == 200) {
+      //print(response.body);
+      bhxGet = (json.decode(response.body)['status']);
+    }
+    return bhxGet;
   }
 
   Future<int> queryCountXe() async {
@@ -615,6 +659,189 @@ class DbProcess {
       Uri.parse('$_baseUrl/delete_BaoHiem.php'),
       body: jsonEncode(<String, String>{
         'MaBHX': maBHX.toString(),
+      }),
+    );
+    if (response.statusCode == 200) {
+      //print(response.body);
+    } else {
+      // Handle error if needed
+    }
+    return;
+  }
+
+//
+//
+//
+// CODING PHIEU BAO TRI
+//
+//
+//
+
+  Future<List<PhieuBaoTri>> queryPhieuBaoTri({
+    required int numberRowIgnore,
+  }) async {
+    List<PhieuBaoTri> danhSachPhieuBaoTri = [];
+
+    /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
+    final response = await http.get(Uri.parse('$_baseUrl/get_PhieuBaoTri.php')
+        .replace(queryParameters: {'offset': numberRowIgnore.toString()}));
+    if (response.statusCode == 200) {
+      //print(response.body);
+
+      List<dynamic> jsonData = json.decode(response.body)['PhieuBaoTri'];
+      danhSachPhieuBaoTri =
+          jsonData.map((data) => PhieuBaoTri.fromJson(data)).toList();
+    } else {
+      // Handle error if needed
+    }
+    return danhSachPhieuBaoTri;
+  }
+
+  Future<List<PhieuBaoTri>> queryPhieuBaoTriFullnameWithString({
+    required String str,
+    required int numberRowIgnore,
+  }) async {
+    /* Lấy 10 dòng dữ liệu Độc Giả được thêm gần đây */
+    List<PhieuBaoTri> danhSachPhieuBaoTri = [];
+
+    /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
+    final response = await http.get(
+        Uri.parse('$_baseUrl/search_PhieuBaoTri.php')
+            .replace(queryParameters: {'BienSoXe': str}));
+    if (response.statusCode == 200) {
+      //print(response.body);
+      List<dynamic> jsonData = json.decode(response.body)['PhieuBaoTri'];
+      danhSachPhieuBaoTri =
+          jsonData.map((data) => PhieuBaoTri.fromJson(data)).toList();
+    } else {
+      // Handle error if needed
+    }
+    return danhSachPhieuBaoTri;
+  }
+
+  Future<List<PhieuBaoTriCanTraDTO>> queryPhieuBaoTriChuaTTWithString({
+    required String str,
+  }) async {
+    /* Lấy 10 dòng dữ liệu Độc Giả được thêm gần đây */
+    List<PhieuBaoTriCanTraDTO> danhSachPhieuBaoTri = [];
+
+    /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
+    final response = await http.get(Uri.parse('$_baseUrl/get_PhieuBaoTri.php')
+        .replace(queryParameters: {'BienSoXe': str}));
+    if (response.statusCode == 200) {
+      //print(response.body);
+      List<dynamic> jsonData = json.decode(response.body)['PhieuBaoTri'];
+      danhSachPhieuBaoTri =
+          jsonData.map((data) => PhieuBaoTriCanTraDTO.fromJson(data)).toList();
+    } else {
+      // Handle error if needed
+    }
+    return danhSachPhieuBaoTri;
+  }
+
+  Future<int> countPhieuBaoTriChuaTTWithString({
+    required String str,
+  }) async {
+    String total = '0';
+    final response = await http.get(Uri.parse('$_baseUrl/get_PhieuBaoTri.php')
+        .replace(queryParameters: {'BienSoXe': str}));
+    if (response.statusCode == 200) {
+      //print(response.body);
+      total = json.decode(response.body)['total_pages'];
+    } else {
+      // Handle error if needed
+    }
+    return int.parse(total);
+  }
+
+  Future<int> queryCountPhieuBaoTri() async {
+    String total = '0';
+    /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
+    final response = await http.get(Uri.parse('$_baseUrl/get_PhieuBaoTri.php'));
+    if (response.statusCode == 200) {
+      //print(response.body);
+
+      total = json.decode(response.body)['total_pages'];
+    } else {
+      // Handle error if needed
+    }
+    return int.parse(total);
+  }
+
+  Future<int> queryCountPhieuBaoTriFullnameWithString(String str) async {
+    String total = '0';
+    final response = await http.get(
+        Uri.parse('$_baseUrl/search_PhieuBaoTri.php')
+            .replace(queryParameters: {'BienSoXe': str}));
+    if (response.statusCode == 200) {
+      //print(response.body);
+      total = json.decode(response.body)['total_PhieuBaoTri'];
+    } else {
+      // Handle error if needed
+    }
+    return int.parse(total);
+  }
+
+  Future<int> insertPhieuBaoTri(String bienSoXe, String ngayBaoTri) async {
+    int newPBT = -1;
+    final response = await http.post(
+      Uri.parse('$_baseUrl/add_PhieuBaoTri.php'),
+      body: jsonEncode(
+          <String, String>{"BienSoXe": bienSoXe, "NgayBaoTri": ngayBaoTri}),
+    );
+    if (response.statusCode == 200) {
+      String status = json.decode(response.body)['status'];
+      if (status == "success") {
+        newPBT = json.decode(response.body)['MaPhieuBaoTri'];
+      } else {
+        return -2;
+      }
+    } else {
+      // Handle error if needed
+      return -2;
+    }
+    return newPBT;
+  }
+
+  Future<void> updatePhieuBaoTri(PhieuBaoTri updatedPhieuBaoTri) async {
+    final response = await http.post(
+      Uri.parse('$_baseUrl/update_PhieuBaoTri.php'),
+      body: jsonEncode(<String, Object>{
+        "MaPhieuBaoTri": updatedPhieuBaoTri.maPhieuBaoTri!,
+        "NgayBaoTri": updatedPhieuBaoTri.ngayBaoTri.toVnFormat(),
+      }),
+    );
+    if (response.statusCode == 200) {
+      // Success
+    } else {
+      // Handle error if needed
+    }
+    return;
+  }
+
+  Future<void> thanhToanPhieuBaoTri(
+      int maPhieuBaoTri, String ngayThanhToan, int total) async {
+    final response = await http.post(
+      Uri.parse('$_baseUrl/add_ThanhToanBaoTri.php'),
+      body: jsonEncode(<String, Object>{
+        "MaPhieuBaoTri": maPhieuBaoTri,
+        "NgayThanhToan": ngayThanhToan,
+        "TongHoaDon": total.toString(),
+      }),
+    );
+    if (response.statusCode == 200) {
+      // Success
+    } else {
+      // Handle error if needed
+    }
+    return;
+  }
+
+  Future<void> deletePhieuBaoTri(int maKhachHang) async {
+    final response = await http.delete(
+      Uri.parse('$_baseUrl/delete_PhieuBaoTri.php'),
+      body: jsonEncode(<String, int>{
+        'MaPhieuBaoTri': maKhachHang,
       }),
     );
     if (response.statusCode == 200) {
