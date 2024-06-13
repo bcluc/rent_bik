@@ -1014,21 +1014,24 @@ class DbProcess {
     return danhSachPhieuBaoTri;
   }
 
-  Future<String> queryHoTenPTWithString({
+  Future<TTKhachHangDTO?> queryTTKHPTWithString({
     required String str,
   }) async {
     /* Lấy 10 dòng dữ liệu Độc Giả được thêm gần đây */
-    String hoTen = '';
+    late TTKhachHangDTO? phieuThue;
+
     /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
     final response = await http.get(Uri.parse('$_baseUrl/get_PhieuThue.php')
         .replace(queryParameters: {'CCCD': str}));
     if (response.statusCode == 200) {
       //print(response.body);
-      hoTen = json.decode(response.body)['HoTen'];
+      String hoTen = json.decode(response.body)['HoTen'];
+      String sdt = json.decode(response.body)['SDT'];
+      phieuThue = TTKhachHangDTO(hoTen: hoTen, sdt: sdt);
     } else {
       // Handle error if needed
     }
-    return hoTen;
+    return phieuThue;
   }
 
   Future<int> insertPhieuTra(PhieuTraDTO newPhieuTra) async {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:rent_bik/dto/ket_qua_tra_phieu_dto.dart';
 import 'package:rent_bik/dto/phieu_thue_can_tra_dto.dart';
+import 'package:rent_bik/dto/thong_tin_khach_hang_dto.dart';
 import 'package:rent_bik/main.dart';
 import 'package:rent_bik/screens/borrow_return_manage/return/return_billing_section.dart';
 import 'package:rent_bik/utils/common_variables.dart';
@@ -24,7 +25,7 @@ class ReturnManageState extends State<ReturnManage> {
   );
 
   String _errorText = '';
-  String _maKH = '';
+  String _sdt = '';
   String _hoTen = '';
 
   bool _isProcessingCCCD = false;
@@ -49,19 +50,20 @@ class ReturnManageState extends State<ReturnManage> {
     });
 
     _hoTen = '';
-    _maKH = '';
+    _sdt = '';
 
     String cccd = _searchCCCDController.text;
 
-    String hoTen = await dbProcess.queryHoTenPTWithString(str: cccd);
+    TTKhachHangDTO? khachHang =
+        await dbProcess.queryTTKHPTWithString(str: cccd);
     await Future.delayed(const Duration(milliseconds: 200));
 
-    if (hoTen == '') {
+    if (khachHang == null) {
       _errorText = 'Không tìm thấy Khách hàng.';
     } else {
       _phieuThues = await dbProcess.queryPhieuThueChuaTTWithString(str: cccd);
-      _maKH = _phieuThues.first.maKH.toString();
-      _hoTen = hoTen;
+      _sdt = khachHang.sdt;
+      _hoTen = khachHang.hoTen;
       _selectedPhieuThue = -1;
     }
 
@@ -175,7 +177,7 @@ class ReturnManageState extends State<ReturnManage> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        _maKH,
+                        _hoTen,
                         style: const TextStyle(
                           fontSize: 16,
                         ),
@@ -191,7 +193,7 @@ class ReturnManageState extends State<ReturnManage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Mã khách hàng:',
+                      'Số điện thoại:',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -203,7 +205,7 @@ class ReturnManageState extends State<ReturnManage> {
                       alignment: Alignment.centerLeft,
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       decoration: BoxDecoration(
-                        color: _maKH.isEmpty
+                        color: _sdt.isEmpty
                             ? const Color(0xffEFEFEF)
                             : Theme.of(context)
                                 .colorScheme
@@ -212,7 +214,7 @@ class ReturnManageState extends State<ReturnManage> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        _hoTen,
+                        _sdt,
                         style: const TextStyle(
                           fontSize: 16,
                         ),
@@ -238,7 +240,7 @@ class ReturnManageState extends State<ReturnManage> {
                     child: CircularProgressIndicator(),
                   ),
                 )
-              : _maKH.isEmpty
+              : _sdt.isEmpty
                   ? Text(
                       _errorText.isEmpty
                           ? 'Bạn cần nhập căn cước công dân để hiển thị danh sách'
