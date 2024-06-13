@@ -4,27 +4,27 @@ import 'package:rent_bik/components/inform_dialog.dart';
 import 'package:rent_bik/main.dart';
 import 'package:rent_bik/utils/extesion.dart';
 
-class ThanhToanBaoTriSection extends StatefulWidget {
-  const ThanhToanBaoTriSection({
+class TraPhieuThueSection extends StatefulWidget {
+  const TraPhieuThueSection({
     super.key,
-    required this.maPhieuBaoTri,
-    required this.ngayThanhToan,
-    required this.onThanhToan,
+    required this.maPhieuThue,
+    required this.onTra,
   });
 
-  final int? maPhieuBaoTri;
-  final DateTime? ngayThanhToan;
-  final void Function() onThanhToan;
+  final int? maPhieuThue;
+  final void Function() onTra;
 
   @override
-  State<ThanhToanBaoTriSection> createState() => _ThanhToanBaoTriSectionState();
+  State<TraPhieuThueSection> createState() => _TraPhieuThueSectionState();
 }
 
-class _ThanhToanBaoTriSectionState extends State<ThanhToanBaoTriSection> {
+class _TraPhieuThueSectionState extends State<TraPhieuThueSection> {
   final _ngayThanhToanController = TextEditingController(
     text: DateTime.now().toVnFormat(),
   );
   final _soTienController = TextEditingController();
+  final _soHanhTrinhController = TextEditingController();
+  final _ghiChuController = TextEditingController();
 
   Future<void> openDatePicker(BuildContext context) async {
     DateTime? chosenDate = await showDatePicker(
@@ -46,11 +46,11 @@ class _ThanhToanBaoTriSectionState extends State<ThanhToanBaoTriSection> {
   }
 
   void _savePhieuTra() async {
-    if (widget.maPhieuBaoTri == null) {
+    if (widget.maPhieuThue == null) {
       showDialog(
         context: context,
         builder: (ctx) =>
-            const InformDialog(content: 'Bạn chưa chọn Mã Phiếu mượn'),
+            const InformDialog(content: 'Bạn chưa chọn Mã Phiếu thuê'),
       );
 
       return;
@@ -58,18 +58,31 @@ class _ThanhToanBaoTriSectionState extends State<ThanhToanBaoTriSection> {
     if (_soTienController.text == '') {
       showDialog(
         context: context,
-        builder: (ctx) => const InformDialog(content: 'Bạn chưa nhập số tiền'),
+        builder: (ctx) =>
+            const InformDialog(content: 'Bạn chưa nhập số tiền thuê'),
+      );
+
+      return;
+    }
+    if (_soHanhTrinhController.text == '') {
+      showDialog(
+        context: context,
+        builder: (ctx) =>
+            const InformDialog(content: 'Bạn chưa nhập số hành trình'),
       );
 
       return;
     }
 
     /* Cập nhật Trạng thái Cuốn sách = 'Có Sẵn' */
-    dbProcess.thanhToanPhieuBaoTri(widget.maPhieuBaoTri!,
-        _ngayThanhToanController.text, int.parse(_soTienController.text));
+    dbProcess.kiemTraTienPhieuThue(
+        widget.maPhieuThue!,
+        _ngayThanhToanController.text,
+        int.parse(_soTienController.text),
+        _ghiChuController.text);
 
     /* Gọi phương thức từ Widget cha là TraSach để xử lý xóa phiếu mượn và trả */
-    widget.onThanhToan();
+    widget.onTra();
 
     /* Hiện thị thông báo lưu Phiếu mượn thành công */
     if (mounted) {
@@ -77,7 +90,7 @@ class _ThanhToanBaoTriSectionState extends State<ThanhToanBaoTriSection> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Thanh toán phiếu bảo trì thành công',
+            'Phiếu trả thành công',
             textAlign: TextAlign.center,
           ),
           behavior: SnackBarBehavior.floating,
@@ -92,6 +105,8 @@ class _ThanhToanBaoTriSectionState extends State<ThanhToanBaoTriSection> {
   void dispose() {
     _ngayThanhToanController.dispose();
     _soTienController.dispose();
+    _ghiChuController.dispose();
+    _soHanhTrinhController.dispose();
     super.dispose();
   }
 
@@ -102,7 +117,7 @@ class _ThanhToanBaoTriSectionState extends State<ThanhToanBaoTriSection> {
       mainAxisSize: MainAxisSize.min,
       children: [
         const Text(
-          'THANH TOÁN PHIẾU BẢO TRÌ',
+          'PHIẾU TRẢ',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -130,7 +145,7 @@ class _ThanhToanBaoTriSectionState extends State<ThanhToanBaoTriSection> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Mã Phiếu bảo trì',
+                            'Mã Phiếu thuê',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -146,9 +161,9 @@ class _ThanhToanBaoTriSectionState extends State<ThanhToanBaoTriSection> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              widget.maPhieuBaoTri == null
+                              widget.maPhieuThue == null
                                   ? ''
-                                  : '${widget.maPhieuBaoTri}',
+                                  : '${widget.maPhieuThue}',
                               style: const TextStyle(
                                 fontSize: 16,
                               ),
@@ -164,7 +179,7 @@ class _ThanhToanBaoTriSectionState extends State<ThanhToanBaoTriSection> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Ngày thanh toán',
+                            'Ngày trả',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -210,7 +225,7 @@ class _ThanhToanBaoTriSectionState extends State<ThanhToanBaoTriSection> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Số tiền thanh toán',
+                            'Số tiền thuê',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -238,7 +253,76 @@ class _ThanhToanBaoTriSectionState extends State<ThanhToanBaoTriSection> {
                         ],
                       ),
                     ),
+                    const Gap(30),
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Số hành trình mới',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          TextFormField(
+                            controller: _soTienController,
+                            enabled: true,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.white,
+                              hintText: "Nhập số hành trình mới (km)",
+                              hintStyle:
+                                  const TextStyle(color: Color(0xFF888888)),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              contentPadding: const EdgeInsets.all(14),
+                              isCollapsed: true,
+                              errorMaxLines: 2,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
+                ),
+                const Gap(5),
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Ghi chú',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      TextFormField(
+                        controller: _soTienController,
+                        enabled: true,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          hintText: "Nhập ghi chú tại đây",
+                          hintStyle: const TextStyle(color: Color(0xFF888888)),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          contentPadding: const EdgeInsets.all(14),
+                          isCollapsed: true,
+                          errorMaxLines: 2,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const Gap(20),
                 FilledButton(
@@ -253,7 +337,7 @@ class _ThanhToanBaoTriSectionState extends State<ThanhToanBaoTriSection> {
                     ),
                   ),
                   child: const Text(
-                    'Thanh toán',
+                    'Lưu phiếu',
                     textAlign: TextAlign.center,
                   ),
                 ),

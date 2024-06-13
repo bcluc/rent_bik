@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:rent_bik/screens/bike_manage/bike_manage.dart';
+import 'package:rent_bik/screens/borrow_return/borrow_manage.dart';
 import 'package:rent_bik/screens/customer_manage/customer_manage.dart';
 import 'package:rent_bik/screens/maintance_manage/maintance_manage.dart';
 import '../components/doi_ma_pin.dart';
@@ -180,7 +181,7 @@ class _BikeRentalManagementState extends State<BikeRentalManagement>
                 CustomerManage(),
                 BikeManage(),
                 MaintanceManage(),
-                BikeManage(),
+                BorrowReturnManage(),
                 BikeManage(),
               ],
             ),

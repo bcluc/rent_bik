@@ -3,7 +3,6 @@ import 'package:gap/gap.dart';
 import 'package:rent_bik/dto/bao_hiem_xe_dto.dart';
 import 'package:rent_bik/dto/bao_hiem_xe_new_dto.dart';
 import 'package:rent_bik/main.dart';
-import 'package:rent_bik/models/bao_hiem_xe.dart';
 import 'package:rent_bik/screens/bike_manage/insurance_manage/buy_insurance_section.dart';
 import 'package:rent_bik/utils/common_variables.dart';
 import 'package:rent_bik/utils/extesion.dart';

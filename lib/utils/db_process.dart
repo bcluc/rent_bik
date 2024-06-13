@@ -1,13 +1,18 @@
 import 'dart:convert';
 import 'package:rent_bik/dto/bao_hiem_xe_dto.dart';
 import 'package:rent_bik/dto/bao_hiem_xe_new_dto.dart';
+import 'package:rent_bik/dto/ket_qua_tra_phieu_dto.dart';
+import 'package:rent_bik/dto/khach_hang_dto.dart';
 import 'package:rent_bik/dto/phieu_bao_tri_can_tra_dto.dart';
+import 'package:rent_bik/dto/phieu_thue_can_tra_dto.dart';
+import 'package:rent_bik/dto/phieu_thue_dto.dart';
 import 'package:rent_bik/dto/xe_dto.dart';
 import 'package:rent_bik/models/bao_hiem_xe.dart';
 import 'package:rent_bik/models/dong_xe.dart';
 import 'package:rent_bik/models/hang_xe.dart';
 import 'package:rent_bik/models/khach_hang.dart';
 import 'package:rent_bik/models/phieu_bao_tri.dart';
+import 'package:rent_bik/models/phieu_thue.dart';
 import 'package:rent_bik/utils/extesion.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:http/http.dart' as http;
@@ -154,6 +159,42 @@ class DbProcess {
       // Handle error if needed
     }
     return;
+  }
+
+  Future<KhachHangDTO> getKHWithString({
+    required String str,
+  }) async {
+    /* Lấy 10 dòng dữ liệu Độc Giả được thêm gần đây */
+    late KhachHangDTO xeGet;
+
+    /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
+    final response = await http.get(Uri.parse('$_baseUrl/search_Customer.php')
+        .replace(queryParameters: {'CCCD': str}));
+    if (response.statusCode == 200) {
+      //print(response.body);
+      xeGet = KhachHangDTO.fromJson(json.decode(response.body)['customer']);
+    } else {
+      // Handle error if needed
+    }
+    return xeGet;
+  }
+
+  Future<String> getStatusKHWithCCCD(
+    String str,
+  ) async {
+    /* Lấy 10 dòng dữ liệu Độc Giả được thêm gần đây */
+    String? bhxGet = "error";
+
+    /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
+    final response = await http.get(Uri.parse('$_baseUrl/search_Customer.php')
+        .replace(queryParameters: {'CCCD': str}));
+
+    if (response.statusCode == 200) {
+      //print(response.body);
+      bhxGet = (json.decode(response.body)['status']);
+      if (bhxGet == null) return "error";
+    }
+    return bhxGet;
   }
 
   //
@@ -850,5 +891,123 @@ class DbProcess {
       // Handle error if needed
     }
     return;
+  }
+
+  //
+  //
+  // PHIEU THUE
+  //
+  //
+
+  Future<PhieuThue> queryPhieuThueWithString({
+    required String str,
+  }) async {
+    /* Lấy 10 dòng dữ liệu Độc Giả được thêm gần đây */
+    late PhieuThue phieuThue;
+
+    /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
+    final response = await http.get(Uri.parse('$_baseUrl/get_PhieuThue.php')
+        .replace(queryParameters: {'CCCD': str}));
+    if (response.statusCode == 200) {
+      //print(response.body);
+      phieuThue = PhieuThue.fromJson(json.decode(response.body)['PhieuThue']);
+    } else {
+      // Handle error if needed
+    }
+    return phieuThue;
+  }
+
+  Future<int> countPhieuThueWithString({
+    required String str,
+  }) async {
+    String total = '0';
+    final response = await http.get(Uri.parse('$_baseUrl/get_PhieuThue.php')
+        .replace(queryParameters: {'CCCD': str}));
+    if (response.statusCode == 200) {
+      //print(response.body);
+      total = json.decode(response.body)['total_pages'];
+    } else {
+      // Handle error if needed
+    }
+    return int.parse(total);
+  }
+
+  Future<int> insertPhieuThue(PhieuThueDTO newPhieuThue) async {
+    int newMaPT = 0;
+    final response = await http.post(
+      Uri.parse('$_baseUrl/add_PhieuThue.php'),
+      body: jsonEncode(<String, String?>{
+        "MaXe": newPhieuThue.maXe.toString(),
+        "MaKH": newPhieuThue.maKH.toString(),
+        "NgayThue": newPhieuThue.ngayThue.toVnFormat(),
+        "NgayTra": newPhieuThue.ngayTra.toVnFormat(),
+        "GiaCoc": newPhieuThue.giaCoc.toString()
+      }),
+    );
+    if (response.statusCode == 200) {
+      newMaPT = int.parse(json.decode(response.body)['MaPhieuThue']);
+    } else {
+      // Handle error if needed
+    }
+    return newMaPT;
+  }
+
+  Future<KetQuaTraPhieuDTO?> kiemTraTienPhieuThue(
+      int maPhieuThue, String ngayTra, int? phiPhat, String? note) async {
+    late KetQuaTraPhieuDTO newMaPT;
+    final response = await http.post(
+      Uri.parse('$_baseUrl/add_PhieuTra.php'),
+      body: jsonEncode(<String, Object?>{
+        "MaPhieuThue": maPhieuThue,
+        "NgayTra": ngayTra,
+        // Có thể thêm note, phí phạt nếu trường hợp xe phụ thu các phí khác như xe hỏng, mất phụ kiên,vv trừ trường hợp quá ngày sẽ tự động tính
+        "PhiPhat": phiPhat.toString(),
+        "Note": note
+      }),
+    );
+    if (response.statusCode == 200) {
+      newMaPT =
+          KetQuaTraPhieuDTO.fromJson(json.decode(response.body)['MaPhieuTra']);
+    } else {
+      // Handle error if needed
+    }
+    return newMaPT;
+  }
+
+  Future<List<PhieuThueCanTraDTO>> queryPhieuThueChuaTTWithString({
+    required String str,
+  }) async {
+    /* Lấy 10 dòng dữ liệu Độc Giả được thêm gần đây */
+    List<PhieuThueCanTraDTO> danhSachPhieuBaoTri = [];
+
+    /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
+    final response = await http.get(Uri.parse('$_baseUrl/get_PhieuThue.php')
+        .replace(queryParameters: {'CCCD': str}));
+    if (response.statusCode == 200) {
+      //print(response.body);
+      List<dynamic> jsonData = json.decode(response.body)['PhieuThues'];
+      danhSachPhieuBaoTri =
+          jsonData.map((data) => PhieuThueCanTraDTO.fromJson(data)).toList();
+    } else {
+      // Handle error if needed
+    }
+    return danhSachPhieuBaoTri;
+  }
+
+  Future<String> queryHoTenPTWithString({
+    required String str,
+  }) async {
+    /* Lấy 10 dòng dữ liệu Độc Giả được thêm gần đây */
+    String hoTen = '';
+    /* Lấy 8 dòng dữ liệu Khách hàng được thêm gần đây */
+    final response = await http.get(Uri.parse('$_baseUrl/get_PhieuThue.php')
+        .replace(queryParameters: {'CCCD': str}));
+    if (response.statusCode == 200) {
+      //print(response.body);
+      hoTen = json.decode(response.body)['HoTen'];
+    } else {
+      // Handle error if needed
+    }
+    return hoTen;
   }
 }
