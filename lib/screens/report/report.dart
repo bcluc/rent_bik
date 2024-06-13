@@ -1,6 +1,9 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_bik/screens/bike_manage/bike_warehouse/bike_warehouse.dart';
 import 'package:rent_bik/screens/report/customer_report.dart';
+import 'package:rent_bik/screens/report/bike_report.dart';
+import 'package:rent_bik/screens/report/income_report.dart';
 
 class Report extends StatefulWidget {
   const Report({super.key});
@@ -80,9 +83,9 @@ class _ReportState extends State<Report> with TickerProviderStateMixin {
             child: TabBarView(
               controller: tabController,
               children: const [
+                PieChartSample2(),
                 CustomerReport(),
-                CustomerReport(),
-                CustomerReport()
+                LineChartSample1()
               ],
             ),
           ),

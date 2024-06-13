@@ -98,20 +98,6 @@ class _CustomerReportState extends State<CustomerReport> {
   final _searchController = TextEditingController();
 
   
-  Future<void> _logicEditKH() async {
-    String? message = await showDialog(
-      context: context,
-      builder: (ctx) => AddEditCustomerForm(
-        editKhachHang: _khachHangRows[_selectedRow],
-      ),
-    );
-
-    // print(message);
-    if (message == "updated") {
-      setState(() {});
-    }
-  }
-
 
 
   
@@ -130,13 +116,7 @@ class _CustomerReportState extends State<CustomerReport> {
 
     setState(() {
       _khachHangRows = newKHRows;
-      /* 
-      Chuyển sang trang khác phải cho _selectedRow = -1
-      VD: 
-      Đang ở trang 1 và selectedRow = 4 (đang ở dòng 5),
-      mà chuyển sang trang 2, chỉ có 2 dòng
-      => Gây ra LỖI
-      */
+     
       _selectedRow = -1;
     });
   }
@@ -176,7 +156,7 @@ class _CustomerReportState extends State<CustomerReport> {
               value: _selectedYear,
               onChanged: _onYearChanged,
               decoration: InputDecoration(
-                labelText: 'Select Year',
+                labelText: 'Chọn năm',
                 border: OutlineInputBorder(),
               ),
               items: List.generate(10, (index) {
@@ -230,16 +210,8 @@ class _CustomerReportState extends State<CustomerReport> {
                               const TextStyle(color: Colors.black);
 
                           return DataRow(
-                            selected: _selectedRow == index,
-                            onSelectChanged: (_) => setState(() {
-                              _selectedRow = index;
-                            }),
-                            onLongPress: () {
-                              setState(() {
-                                _selectedRow = index;
-                              });
-                              _logicEditKH();
-                            },
+                           
+                            
                             cells: [
                               DataCell(
                                 Text(
