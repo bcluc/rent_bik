@@ -105,7 +105,7 @@ class _BikeFormState extends State<BikeForm> {
           soHanhTrinh: int.parse(_soHanhTrinhController.text),
         );
 
-        int returningId = await dbProcess.insertXeDto(newXeDto);
+        int returningId = await dbProcess.createXe(newXeDto);
         newXeDto.maXe = returningId;
 
         if (mounted) {
@@ -314,7 +314,7 @@ class _BikeFormState extends State<BikeForm> {
                               initialDateInPicker: widget.editXe != null
                                   ? widget.editXe!.ngayMua
                                   : DateTime.now(),
-                              lastDate: DateTime.now(),
+                              lastDate: DateTime.now().addYears(50),
                             ),
                             const SizedBox(height: 10),
                             LabelTextFormField(

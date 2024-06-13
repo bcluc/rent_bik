@@ -1,10 +1,8 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:rent_bik/screens/auth/auth.dart';
 import 'package:rent_bik/utils/db_process.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 DbProcess dbProcess = DbProcess();
 

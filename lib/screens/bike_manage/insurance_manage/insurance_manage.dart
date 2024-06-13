@@ -1,38 +1,37 @@
 import 'dart:math';
-
+import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
-import 'package:rent_bik/components/my_search_bar.dart';
 import 'package:rent_bik/components/pagination.dart';
 import 'package:rent_bik/main.dart';
-import 'package:rent_bik/models/khach_hang.dart';
-import 'package:rent_bik/screens/customer_manage/add_edit_customer_form.dart';
+import 'package:rent_bik/models/bao_hiem_xe.dart';
+import 'package:rent_bik/screens/bike_manage/insurance_manage/edit_insurance_form.dart';
 import 'package:rent_bik/utils/common_variables.dart';
 import 'package:rent_bik/utils/extesion.dart';
 
-class CustomerManage extends StatefulWidget {
-  const CustomerManage({super.key});
+class InsuranceManage extends StatefulWidget {
+  const InsuranceManage({super.key});
 
   @override
-  State<CustomerManage> createState() => _CustomerManageState();
+  State<InsuranceManage> createState() => _InsuranceManageState();
 }
 
-class _CustomerManageState extends State<CustomerManage> {
-// Danh sách Tên các cột trong Bảng Khách Hàng
+class _InsuranceManageState extends State<InsuranceManage> {
+  // Danh sách Tên các cột trong Bảng Khách Hàng
   final List<String> _colsName = [
-    '#',
-    'CCCD',
-    'Họ Tên',
-    'Ngày sinh',
-    'Số điện thoại',
-    'GPLX',
-    'Ghi chú',
+    'Mã BHX',
+    'Số bảo hiểm',
+    'Biển số xe',
+    'Ngày mua',
+    'Ngày hết hạn',
+    'Giá mua',
   ];
 
   int _selectedRow = -1;
+  bool _isSort = false;
 
   /* 2 biến này không set final bởi vì nó sẽ thay đổi giá trị khi người dùng tương tác */
-  late List<KhachHang> _khachHangRows;
-  late int _khachHangCount;
+  late List<BaoHiemXe> _bhxRows;
+  late int _bhxCount;
 
   late final Future<void> _futureRecentKHs = _getRecentKHs();
   Future<void> _getRecentKHs() async {
@@ -41,34 +40,22 @@ class _CustomerManageState extends State<CustomerManage> {
     Tạo chuyển động mượt mà 
     */
     await Future.delayed(kTabScrollDuration);
-    _khachHangRows = await dbProcess.queryKhachHang(numberRowIgnore: 1);
-    _khachHangCount = await dbProcess.queryCountKhachHang();
+    _bhxRows = await dbProcess.queryBaoHiemXe(numberRowIgnore: 1);
+    _bhxCount = await dbProcess.queryCountBaoHiemXe();
   }
-
-  final _searchController = TextEditingController();
 
   /*
   Nếu có Độc giả mới được thêm (tức là đã điền đầy đủ thông tin hợp lệ + nhấn Save)
   thì phương thức showDialog() sẽ trả về một KH mới
   */
-  Future<void> _logicAddKH() async {
-    KhachHang? newKH = await showDialog(
-      context: context,
-      builder: (ctx) => const AddEditCustomerForm(),
-    );
-
-    // print(newKH);
-    if (newKH != null) {
-      // print(
-      //     "('${newKH.fullname}', '${newKH.dob.toVnFormat()}', '${newKH.address}', '${newKH.phoneNumber}', '${newKH.creationDate.toVnFormat()}', '${newKH.expirationDate.toVnFormat()}', 0),");
-      setState(() {
-        if (_khachHangRows.length < 8) {
-          _khachHangRows.add(newKH);
-        }
-        _khachHangCount++;
-        // print('total page = ${_KHCount ~/ 8 + min(_KHCount % 8, 1)}');
-      });
-    }
+  Future<void> _filterList() async {
+    setState(() {
+      if (_isSort) {
+        _bhxRows.sort((a, b) => a.ngayHetHan.compareTo(b.ngayHetHan));
+      } else {
+        _bhxRows.sort((a, b) => a.maBHX!.compareTo(b.maBHX!));
+      }
+    });
   }
 
   /*
@@ -77,11 +64,11 @@ class _CustomerManageState extends State<CustomerManage> {
     - String 'updated', nếu người dùng nhấn Save
     - null, nếu người dùng nhấn nút Close hoặc Click Outside of Dialog
   */
-  Future<void> _logicEditKH() async {
+  Future<void> _logicEditBHX() async {
     String? message = await showDialog(
       context: context,
-      builder: (ctx) => AddEditCustomerForm(
-        editKhachHang: _khachHangRows[_selectedRow],
+      builder: (ctx) => EditBHXForm(
+        editBaoHiemXe: _bhxRows[_selectedRow],
       ),
     );
 
@@ -94,12 +81,12 @@ class _CustomerManageState extends State<CustomerManage> {
   /* 
   Hàm này là logic Xóa Độc giả 
   */
-  Future<void> _logicDeleteKH() async {
-    var deleteKHName = _khachHangRows[_selectedRow].hoTen;
+  Future<void> _logicDeleteBHX() async {
+    var deleteKHName = _bhxRows[_selectedRow].soBHX;
 
     /* Xóa dòng dữ liệu*/
-    await dbProcess.deleteKhachHang(
-      _khachHangRows[_selectedRow].maKhachHang!,
+    await dbProcess.deleteBaoHiemXe(
+      _bhxRows[_selectedRow].maBHX!,
     );
 
     /* 
@@ -108,31 +95,31 @@ class _CustomerManageState extends State<CustomerManage> {
     Nếu giảm _KHCount đi 1 đơn vị trước khi tính totalPages
     thì totalPages chỉ còn 2 => SAI 
     */
-    int totalPages = _khachHangCount ~/ 8 + min(_khachHangCount % 8, 1);
+    int totalPages = _bhxCount ~/ 8 + min(_bhxCount % 8, 1);
     int currentPage = int.parse(_paginationController.text);
 
-    _khachHangCount--;
+    _bhxCount--;
 
     // print('totalPage = $totalPages');
 
     if (currentPage == totalPages) {
-      _khachHangRows.removeAt(_selectedRow);
+      _bhxRows.removeAt(_selectedRow);
       /* 
       Trường hợp đặc biệt:
       Thủ thư đang ở trang cuối cùng và xóa nốt dòng cuối cùng 
       thì phải chuyển lại sang trang trước đó.
       VD: Xóa hết các dòng ở trang 3 thì tự động chuyển về trang 2
       */
-      if (_khachHangRows.isEmpty && _khachHangCount > 0) {
+      if (_bhxRows.isEmpty && _bhxCount > 0) {
         currentPage--;
         _paginationController.text = currentPage.toString();
-        _loadKHsOfPageIndex(currentPage);
+        _loadBHXsOfPageIndex(currentPage);
       }
       /* 
       Nếu không còn trang trước đó, tức _KHCount == 0, thì không cần làm gì cả 
       */
     } else {
-      _loadKHsOfPageIndex(currentPage);
+      _loadBHXsOfPageIndex(currentPage);
     }
 
     setState(() {});
@@ -143,7 +130,7 @@ class _CustomerManageState extends State<CustomerManage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Đã xóa Khách Hàng $deleteKHName.',
+            'Đã xóa Bảo hiểm xe $deleteKHName.',
             textAlign: TextAlign.center,
           ),
           behavior: SnackBarBehavior.floating,
@@ -154,19 +141,12 @@ class _CustomerManageState extends State<CustomerManage> {
   }
 
   /* Hàm này dùng để lấy các KH ở trang thứ Index và hiển thị lên bảng */
-  Future<void> _loadKHsOfPageIndex(int pageIndex) async {
-    String searchText = _searchController.text.toLowerCase();
-
-    List<KhachHang> newKHRows = searchText.isEmpty
-        ? await dbProcess.queryKhachHang(
-            numberRowIgnore: (pageIndex - 1) * 8 + 1)
-        : await dbProcess.queryKhachHangFullnameWithString(
-            numberRowIgnore: (pageIndex - 1) * 8 + 1,
-            str: searchText,
-          );
+  Future<void> _loadBHXsOfPageIndex(int pageIndex) async {
+    List<BaoHiemXe> newKHRows = await dbProcess.queryBaoHiemXe(
+        numberRowIgnore: (pageIndex - 1) * 8 + 1);
 
     setState(() {
-      _khachHangRows = newKHRows;
+      _bhxRows = newKHRows;
       /* 
       Chuyển sang trang khác phải cho _selectedRow = -1
       VD: 
@@ -182,7 +162,6 @@ class _CustomerManageState extends State<CustomerManage> {
 
   @override
   void dispose() {
-    _searchController.dispose();
     super.dispose();
   }
 
@@ -199,42 +178,28 @@ class _CustomerManageState extends State<CustomerManage> {
             );
           }
 
-          int totalPages = _khachHangCount ~/ 8 + min(_khachHangCount % 8, 1);
+          int totalPages = _bhxCount ~/ 8 + min(_bhxCount % 8, 1);
 
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 30),
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 30),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                MySearchBar(
-                  controller: _searchController,
-                  onSearch: (value) async {
-                    /* 
-                    Phòng trường hợp gõ tiếng việt
-                    VD: o -> (rỗng) -> ỏ
-                    Lúc này, value sẽ bằng '' (rỗng) nhưng _searchController.text lại bằng "ỏ"
-                    */
-                    if (_searchController.text == value) {
-                      _paginationController.text = '1';
-                      _khachHangCount =
-                          await dbProcess.queryCountKhachHangFullnameWithString(
-                              _searchController.text);
-                      _loadKHsOfPageIndex(1);
-                    }
-                  },
-                ),
-                const SizedBox(height: 24),
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     /* 
-                    Đây là nút "Thêm độc giả" mới,
-                    Logic xử lý khi nhấn _logicAddKH xem ở bên trên
+                    Nút "Sửa thông tin Độc Giả" 
+                    Logic xử lý _logicEditKH xem ở phần khai báo bên trên
                     */
                     FilledButton.icon(
-                      onPressed: _logicAddKH,
-                      icon: const Icon(Icons.add_rounded),
-                      label: const Text('Thêm khách hàng'),
+                      onPressed: () {
+                        _isSort = !_isSort;
+                        _filterList();
+                      },
+                      icon: const Icon(Icons.filter_alt_rounded),
+                      label: Text(
+                          'Sắp xếp theo ${_isSort ? "ngày hết hạn" : "mã bảo hiểm"}'),
                       style: TextButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -243,7 +208,7 @@ class _CustomerManageState extends State<CustomerManage> {
                             vertical: 18, horizontal: 16),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const Spacer(),
                     /* 
                     Đây là nút "Xóa độc giả",
                     Phòng trường hợp khi _selectedRow đang ở cuối bảng và ta nhấn xóa dòng cuối của bảng
@@ -261,7 +226,7 @@ class _CustomerManageState extends State<CustomerManage> {
                                 builder: (ctx) => AlertDialog(
                                   title: const Text('Xác nhận'),
                                   content: Text(
-                                      'Bạn có chắc xóa Khách hàng ${_khachHangRows[_selectedRow].hoTen}?'),
+                                      'Bạn có chắc xóa Bảo hiểm xe ${_bhxRows[_selectedRow].soBHX}?'),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
@@ -273,14 +238,14 @@ class _CustomerManageState extends State<CustomerManage> {
                                       child: const Text('Huỷ'),
                                     ),
                                     FilledButton(
-                                      onPressed: _logicDeleteKH,
+                                      onPressed: _logicDeleteBHX,
                                       child: const Text('Có'),
                                     ),
                                   ],
                                 ),
                               );
 
-                              if (_selectedRow >= _khachHangRows.length) {
+                              if (_selectedRow >= _bhxRows.length) {
                                 _selectedRow = -1;
                               }
                             },
@@ -296,7 +261,7 @@ class _CustomerManageState extends State<CustomerManage> {
                       onPressed: _selectedRow == -1
                           ? null
                           : () {
-                              _logicEditKH();
+                              _logicEditBHX();
                             },
                       icon: const Icon(Icons.edit),
                       style: myIconButtonStyle,
@@ -337,14 +302,26 @@ class _CustomerManageState extends State<CustomerManage> {
                         ),
                       ),
                       rows: List.generate(
-                        _khachHangRows.length,
+                        _bhxRows.length,
                         (index) {
-                          KhachHang khachHang = _khachHangRows[index];
+                          BaoHiemXe baoHiemXe = _bhxRows[index];
                           /* Thẻ Độc Giả quá hạn sẽ tô màu xám (black26) */
                           TextStyle cellTextStyle =
                               const TextStyle(color: Colors.black);
 
                           return DataRow(
+                            color: baoHiemXe.ngayHetHan < DateTime.now()
+                                ? MaterialStateProperty.resolveWith((states) {
+                                    if (states
+                                        .contains(MaterialState.selected)) {
+                                      return Theme.of(context)
+                                          .colorScheme
+                                          .primary
+                                          .withOpacity(0.3);
+                                    }
+                                    return Colors.black12;
+                                  })
+                                : null,
                             selected: _selectedRow == index,
                             onSelectChanged: (_) => setState(() {
                               _selectedRow = index;
@@ -353,66 +330,48 @@ class _CustomerManageState extends State<CustomerManage> {
                               setState(() {
                                 _selectedRow = index;
                               });
-                              _logicEditKH();
+                              _logicEditBHX();
                             },
                             cells: [
                               DataCell(
                                 Text(
-                                  khachHang.maKhachHang.toString(),
+                                  baoHiemXe.maBHX.toString(),
                                   style: cellTextStyle,
                                 ),
                               ),
                               DataCell(
                                 Text(
-                                  khachHang.cccd.toString(),
-                                  style: cellTextStyle,
-                                ),
-                              ),
-                              DataCell(
-                                /* Ràng buộc cho Chiều rộng Tối đa của cột Họ Tên = 150 */
-                                ConstrainedBox(
-                                  constraints:
-                                      const BoxConstraints(maxWidth: 150),
-                                  child: Text(
-                                    khachHang.hoTen
-                                        .capitalizeFirstLetterOfEachWord(),
-                                    style: cellTextStyle,
-                                  ),
-                                ),
-                              ),
-                              DataCell(
-                                Text(
-                                  khachHang.ngaySinh.toVnFormat(),
+                                  baoHiemXe.soBHX.toString(),
                                   style: cellTextStyle,
                                 ),
                               ),
                               DataCell(
                                 Text(
-                                  khachHang.soDienThoai,
+                                  baoHiemXe.bienSoXe.toString(),
                                   style: cellTextStyle,
                                 ),
                               ),
                               DataCell(
                                 Text(
-                                  khachHang.hangGPLX!
-                                      .capitalizeFirstLetterOfEachWord(),
+                                  baoHiemXe.ngayMua.toVnFormat(),
                                   style: cellTextStyle,
                                 ),
                               ),
                               DataCell(
-                                /* 
-                                Ràng buộc cho Chiều rộng Tối đa của cột Địa chỉ = 250 
-                                phòng trường hợp địa chỉ quá dài
-                                */
-                                ConstrainedBox(
-                                  constraints:
-                                      const BoxConstraints(maxWidth: 250),
-                                  child: Text(
-                                    khachHang.ghiChu == null
-                                        ? ''
-                                        : khachHang.ghiChu!,
-                                    style: cellTextStyle,
-                                  ),
+                                Text(
+                                  baoHiemXe.ngayHetHan.toVnFormat(),
+                                  style: baoHiemXe.ngayHetHan < DateTime.now()
+                                      ? const TextStyle(
+                                          color:
+                                              Color.fromARGB(255, 155, 10, 0),
+                                          fontWeight: FontWeight.bold)
+                                      : cellTextStyle,
+                                ),
+                              ),
+                              DataCell(
+                                Text(
+                                  baoHiemXe.soTien.toString(),
+                                  style: cellTextStyle,
                                 ),
                               ),
                             ],
@@ -422,17 +381,17 @@ class _CustomerManageState extends State<CustomerManage> {
                     ),
                   ),
                 ),
-                if (_khachHangCount > 0) const Spacer(),
-                _khachHangCount > 0
+                if (_bhxCount > 0) const Spacer(),
+                _bhxCount > 0
                     ? Pagination(
                         controller: _paginationController,
                         maxPages: totalPages,
-                        onChanged: _loadKHsOfPageIndex,
+                        onChanged: _loadBHXsOfPageIndex,
                       )
                     : const Expanded(
                         child: Center(
                           child: Text(
-                            'Chưa có dữ liệu Khách hàng',
+                            'Chưa có dữ liệu Bảo hiểm xe',
                             style:
                                 TextStyle(fontSize: 16, color: Colors.black54),
                           ),

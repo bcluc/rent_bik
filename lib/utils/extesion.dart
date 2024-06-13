@@ -12,7 +12,9 @@ extension IntExtension on int {
   }
 
   String toVnCurrencyWithoutSymbolFormat() {
-    return NumberFormat.currency(locale: 'vi_VN', symbol: '').format(this).trim();
+    return NumberFormat.currency(locale: 'vi_VN', symbol: '')
+        .format(this)
+        .trim();
   }
 
   String twoDigits() {
