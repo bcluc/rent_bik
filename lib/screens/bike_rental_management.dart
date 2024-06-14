@@ -148,22 +148,6 @@ class _BikeRentalManagementState extends State<BikeRentalManagement>
                               ],
                             ),
                           ),
-                          const PopupMenuDivider(),
-                          PopupMenuItem(
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (ctx) => const DoiMaPin(),
-                              );
-                            },
-                            child: const Row(
-                              children: [
-                                Icon(Icons.pin),
-                                Gap(12),
-                                Text('Đổi mã PIN'),
-                              ],
-                            ),
-                          ),
                         ],
                         surfaceTintColor: Colors.transparent,
                         tooltip: '',
