@@ -215,6 +215,7 @@ class ReturnManageState extends State<ReturnManage> {
                       ),
                       child: Text(
                         _sdt,
+
                         style: const TextStyle(
                           fontSize: 16,
                         ),
