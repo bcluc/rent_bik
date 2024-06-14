@@ -36,7 +36,7 @@ enum LoaiXe {
 
 //A1, A2, A3, A4, B1, B2, C, D, E, FB2, FD, FE, FC
 enum GPLX {
-  none('Không có'),
+  none('A1'),
   A1('A1'),
   A2('A2'),
   A3('A3'),
