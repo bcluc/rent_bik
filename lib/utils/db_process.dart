@@ -1048,7 +1048,7 @@ class DbProcess {
       }),
     );
     if (response.statusCode == 200) {
-      newMaPT = int.parse(json.decode(response.body)['MaPhieuTra']);
+      newMaPT = (json.decode(response.body)['MaPhieuTra']);
     } else {
       // Handle error if needed
     }

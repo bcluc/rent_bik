@@ -390,153 +390,162 @@ class ReturnManageState extends State<ReturnManage> {
                                     ],
                                   ),
                                 ),
-                                ...List.generate(
-                                  _phieuThues.length,
-                                  (index) {
-                                    bool isMaPhieuMuonHover = false;
-                                    return Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Row(
+                                Expanded(
+                                  child: ListView(
+                                    children: List.generate(
+                                      _phieuThues.length,
+                                      (index) {
+                                        bool isMaPhieuMuonHover = false;
+                                        return Column(
+                                          mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            SizedBox(
-                                              width: 150,
-                                              child: StatefulBuilder(builder:
-                                                  (ctx, setStateMaPhieuMuon) {
-                                                return InkWell(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      _selectedPhieuThue =
-                                                          index;
-                                                    });
-                                                  },
-                                                  onHover: (value) =>
-                                                      setStateMaPhieuMuon(
-                                                    () => isMaPhieuMuonHover =
-                                                        value,
-                                                  ),
+                                            Row(
+                                              children: [
+                                                SizedBox(
+                                                  width: 150,
+                                                  child: StatefulBuilder(
+                                                      builder: (ctx,
+                                                          setStateMaPhieuMuon) {
+                                                    return InkWell(
+                                                      onTap: () {
+                                                        setState(() {
+                                                          _selectedPhieuThue =
+                                                              index;
+                                                        });
+                                                      },
+                                                      onHover: (value) =>
+                                                          setStateMaPhieuMuon(
+                                                        () =>
+                                                            isMaPhieuMuonHover =
+                                                                value,
+                                                      ),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .fromLTRB(
+                                                                20, 15, 15, 15),
+                                                        child: SizedBox(
+                                                          height: 24,
+                                                          child: Row(
+                                                            children: [
+                                                              Text(
+                                                                isMaPhieuMuonHover
+                                                                    ? 'Trả'
+                                                                    : _phieuThues[
+                                                                            index]
+                                                                        .maPhieuThue
+                                                                        .toString(),
+                                                              ),
+                                                              const Gap(6),
+                                                              if (isMaPhieuMuonHover)
+                                                                const Icon(Icons
+                                                                    .arrow_downward_rounded),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }),
+                                                ),
+                                                Expanded(
+                                                  flex: 3,
                                                   child: Padding(
                                                     padding: const EdgeInsets
-                                                        .fromLTRB(
-                                                        20, 15, 15, 15),
-                                                    child: SizedBox(
-                                                      height: 24,
-                                                      child: Row(
-                                                        children: [
-                                                          Text(
-                                                            isMaPhieuMuonHover
-                                                                ? 'Trả'
-                                                                : _phieuThues[
-                                                                        index]
-                                                                    .maPhieuThue
-                                                                    .toString(),
+                                                        .symmetric(
+                                                      horizontal: 15,
+                                                    ),
+                                                    child: Row(
+                                                      children: [
+                                                        Expanded(
+                                                          child: Text(
+                                                            _phieuThues[index]
+                                                                .bienSoXe,
                                                           ),
-                                                          const Gap(6),
-                                                          if (isMaPhieuMuonHover)
-                                                            const Icon(Icons
-                                                                .arrow_downward_rounded),
-                                                        ],
-                                                      ),
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
-                                                );
-                                              }),
-                                            ),
-                                            Expanded(
-                                              flex: 3,
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                  horizontal: 15,
                                                 ),
-                                                child: Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Text(
-                                                        _phieuThues[index]
-                                                            .bienSoXe,
-                                                      ),
+                                                Expanded(
+                                                  flex: 3,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 15,
                                                     ),
-                                                  ],
+                                                    child: Text(
+                                                      _phieuThues[index]
+                                                          .tenHangXe,
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
+                                                Expanded(
+                                                  flex: 3,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 15,
+                                                    ),
+                                                    child: Text(
+                                                      _phieuThues[index]
+                                                          .tenDongXe,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  flex: 3,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 15,
+                                                    ),
+                                                    child: Text(
+                                                      _phieuThues[index]
+                                                          .giaCoc
+                                                          .toString(),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  flex: 3,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 15,
+                                                    ),
+                                                    child: Text(
+                                                      _phieuThues[index]
+                                                          .ngayThue
+                                                          .toVnFormat(),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  flex: 3,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 15,
+                                                    ),
+                                                    child: Text(
+                                                      _phieuThues[index]
+                                                          .ngayTra
+                                                          .toVnFormat(),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                            Expanded(
-                                              flex: 3,
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                  horizontal: 15,
-                                                ),
-                                                child: Text(
-                                                  _phieuThues[index].tenHangXe,
-                                                ),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              flex: 3,
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                  horizontal: 15,
-                                                ),
-                                                child: Text(
-                                                  _phieuThues[index].tenDongXe,
-                                                ),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              flex: 3,
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                  horizontal: 15,
-                                                ),
-                                                child: Text(
-                                                  _phieuThues[index]
-                                                      .giaCoc
-                                                      .toString(),
-                                                ),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              flex: 3,
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                  horizontal: 15,
-                                                ),
-                                                child: Text(
-                                                  _phieuThues[index]
-                                                      .ngayThue
-                                                      .toVnFormat(),
-                                                ),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              flex: 3,
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                  horizontal: 15,
-                                                ),
-                                                child: Text(
-                                                  _phieuThues[index]
-                                                      .ngayTra
-                                                      .toVnFormat(),
-                                                ),
-                                              ),
+                                            const Divider(
+                                              height: 0,
                                             ),
                                           ],
-                                        ),
-                                        const Divider(
-                                          height: 0,
-                                        ),
-                                      ],
-                                    );
-                                  },
+                                        );
+                                      },
+                                    ),
+                                  ),
                                 ),
-                                const Spacer(),
+                                const Gap(10),
                                 TraPhieuThueSection(
                                   maPhieuThue: _selectedPhieuThue == -1
                                       ? null

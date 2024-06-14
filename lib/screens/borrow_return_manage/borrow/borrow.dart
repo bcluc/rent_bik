@@ -171,7 +171,9 @@ class _ThueXeState extends State<ThueXe> {
         builder: (ctx) =>
             const InformDialog(content: 'Phiếu thuê không hợp lệ'),
       );
-
+      setState(() {
+        _isProcessingLuuPhieuMuon = false;
+      });
       return;
     }
 
@@ -317,6 +319,8 @@ class _ThueXeState extends State<ThueXe> {
                   labelText: 'Ngày mượn',
                   controller: _ngayMuonController,
                   lastDate: DateTime.now().addYears(3),
+                  initialDateInPicker:
+                      vnDateFormat.parse(_ngayMuonController.text),
                 ),
               ),
               const Gap(30),
@@ -325,6 +329,8 @@ class _ThueXeState extends State<ThueXe> {
                   labelText: 'Ngày trả',
                   controller: _ngayTraController,
                   lastDate: DateTime.now().addYears(3),
+                  initialDateInPicker:
+                      vnDateFormat.parse(_ngayMuonController.text).addDays(3),
                 ),
               ),
               const Gap(30),

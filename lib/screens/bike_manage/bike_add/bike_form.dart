@@ -121,6 +121,7 @@ class _BikeFormState extends State<BikeForm> {
         widget.editXe!.ngayMua = vnDateFormat.parse(_dateBuyController.text);
         widget.editXe!.soHanhTrinh = int.parse(_soHanhTrinhController.text);
 
+        print(_hangGPLXController.text);
         // ignore: use_build_context_synchronously
         widget.editXe!.dongXes = context.read<SelectedDongXeCubit>().state;
         // ignore: use_build_context_synchronously
