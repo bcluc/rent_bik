@@ -87,6 +87,7 @@ class _TraPhieuThueSectionState extends State<TraPhieuThueSection> {
 
       return;
     }
+    if (_soTienController.text == "") _soTienController.text = "0";
 
     final PhieuTraDTO phieuTra = PhieuTraDTO(
         maPhieuThue: widget.maPhieuThue!,

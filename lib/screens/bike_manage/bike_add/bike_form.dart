@@ -36,7 +36,7 @@ enum LoaiXe {
 
 //A1, A2, A3, A4, B1, B2, C, D, E, FB2, FD, FE, FC
 enum GPLX {
-  none('Không có'),
+  none('A1'),
   A1('A1'),
   A2('A2'),
   A3('A3'),
@@ -121,6 +121,7 @@ class _BikeFormState extends State<BikeForm> {
         widget.editXe!.ngayMua = vnDateFormat.parse(_dateBuyController.text);
         widget.editXe!.soHanhTrinh = int.parse(_soHanhTrinhController.text);
 
+        print(_hangGPLXController.text);
         // ignore: use_build_context_synchronously
         widget.editXe!.dongXes = context.read<SelectedDongXeCubit>().state;
         // ignore: use_build_context_synchronously

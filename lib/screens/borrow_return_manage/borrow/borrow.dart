@@ -162,7 +162,20 @@ class _ThueXeState extends State<ThueXe> {
     );
 
     /* Không cần await cũng được */
-    await dbProcess.insertPhieuThue(phieuThue);
+    int res = await dbProcess.insertPhieuThue(phieuThue);
+
+    if (res == -1) {
+      showDialog(
+        // ignore: use_build_context_synchronously
+        context: context,
+        builder: (ctx) =>
+            const InformDialog(content: 'Phiếu thuê không hợp lệ'),
+      );
+      setState(() {
+        _isProcessingLuuPhieuMuon = false;
+      });
+      return;
+    }
 
     await Future.delayed(const Duration(milliseconds: 200));
 
@@ -306,6 +319,8 @@ class _ThueXeState extends State<ThueXe> {
                   labelText: 'Ngày mượn',
                   controller: _ngayMuonController,
                   lastDate: DateTime.now().addYears(3),
+                  initialDateInPicker:
+                      vnDateFormat.parse(_ngayMuonController.text),
                 ),
               ),
               const Gap(30),
@@ -314,6 +329,8 @@ class _ThueXeState extends State<ThueXe> {
                   labelText: 'Ngày trả',
                   controller: _ngayTraController,
                   lastDate: DateTime.now().addYears(3),
+                  initialDateInPicker:
+                      vnDateFormat.parse(_ngayMuonController.text).addDays(3),
                 ),
               ),
               const Gap(30),
